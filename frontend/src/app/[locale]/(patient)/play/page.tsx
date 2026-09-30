@@ -6,6 +6,12 @@ import { Link } from "@/i18n/routing";
 import { BigButton } from "@/components/patient/BigButton";
 import { recordGameEventOffline, generateUUIDv7 } from "@/lib/offline";
 import {
+  subscribeSyncState,
+  setupAutoSync,
+  syncAllUnsynced,
+  type SyncState,
+} from "@/lib/sync";
+import {
   CULTURAL_ITEM_BANK,
   createInitialSession,
   getDefaultOrientationData,
@@ -43,6 +49,25 @@ export default function PatientPlayPage() {
   const [matchedKeys, setMatchedKeys] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<string>("");
   const [hintMessage, setHintMessage] = useState<string>("");
+
+  // Offline sync state
+  const [syncState, setSyncState] = useState<SyncState>(() => ({
+    isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
+    isSyncing: false,
+    pendingCount: 0,
+    lastSyncTime: null,
+    lastError: null,
+    retryAttempt: 0,
+  }));
+
+  useEffect(() => {
+    const cleanupAutoSync = setupAutoSync();
+    const unsubscribe = subscribeSyncState((s) => setSyncState(s));
+    return () => {
+      cleanupAutoSync();
+      unsubscribe();
+    };
+  }, []);
 
   const turnTimerRef = useRef<NodeJS.Timeout | null>(null);
   const turnStartTimeRef = useRef<number>(Date.now());
@@ -158,6 +183,9 @@ export default function PatientPlayPage() {
         response_time_ms: responseTimeMs,
       });
 
+      // Opportunistic sync attempt if online
+      syncAllUnsynced().catch(() => {});
+
       setSessionCtx((prev) => ({
         ...prev,
         state: updatedAdaptiveState,
@@ -211,6 +239,27 @@ export default function PatientPlayPage() {
           {t("todayIs")}: {new Date().toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" })}
         </span>
       </div>
+
+      {/* Calm Offline / Sync Status Notice */}
+      {!syncState.isOnline ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="bg-[#FFF8E7] text-[#7A5800] border border-[#E0D0A0] px-4 py-3 rounded-2xl flex items-center gap-3 text-sm font-medium shadow-xs"
+        >
+          <span className="text-xl" aria-hidden="true">📡</span>
+          <span>{tCommon("offlineNotice")}</span>
+        </div>
+      ) : syncState.isSyncing ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9] px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-medium"
+        >
+          <span className="text-sm" aria-hidden="true">🔄</span>
+          <span>Saving activities...</span>
+        </div>
+      ) : null}
 
       {/* 1. HOME SCREEN */}
       {screenMode === "home" && (
