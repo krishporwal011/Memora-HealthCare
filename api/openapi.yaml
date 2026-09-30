@@ -103,6 +103,28 @@ paths:
         '403':
           description: Not authorized to access this patient
 
+  /v1/onboarding:
+    post:
+      summary: Onboard a new elder with capacity evaluation and verifiable guardian consent
+      description: Atomically creates patient profile and records guardian consent under DPDP Act 2023. Patient data remains locked until valid consent is recorded.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingRequest'
+      responses:
+        '201':
+          description: Onboarding complete and consent established
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        '400':
+          description: Invalid onboarding payload
+
   /v1/consents:
     post:
       summary: Record verifiable consent for a patient
@@ -219,6 +241,12 @@ components:
           type: string
         guardian_relationship:
           type: string
+        guardian_note:
+          type: string
+        capacity_assessed:
+          type: boolean
+        capacity_notes:
+          type: string
         consent_version:
           type: string
         is_active:
@@ -243,9 +271,69 @@ components:
         guardian_relationship:
           type: string
           example: Daughter
+        guardian_note:
+          type: string
+          example: Registered primary caregiver; elder requires full digital assistance
+        capacity_assessed:
+          type: boolean
+          example: true
+        capacity_notes:
+          type: string
+          example: Cognitive decline reported; family consensus
         consent_version:
           type: string
           example: "2026.1"
+
+    OnboardingRequest:
+      type: object
+      required:
+        - full_name
+        - preferred_language
+        - lacks_capacity
+        - guardian_name
+        - guardian_relationship
+        - consent_version
+      properties:
+        full_name:
+          type: string
+          example: Bhaben Baruah
+        preferred_language:
+          type: string
+          example: as
+        initial_theta:
+          type: number
+          format: float
+          default: 0.0
+        lacks_capacity:
+          type: boolean
+          description: Does the elder lack independent legal capacity to consent?
+          example: true
+        capacity_notes:
+          type: string
+          example: Memory decline observed over 12 months; daughter assists with all care decisions
+        guardian_name:
+          type: string
+          example: Jonali Baruah
+        guardian_relationship:
+          type: string
+          example: Daughter
+        guardian_note:
+          type: string
+          example: Primary caregiver residing with elder
+        consent_version:
+          type: string
+          example: "2026.1"
+
+    OnboardingResponse:
+      type: object
+      required:
+        - patient
+        - consent
+      properties:
+        patient:
+          $ref: '#/components/schemas/Patient'
+        consent:
+          $ref: '#/components/schemas/Consent'
 
     GameEventInput:
       type: object

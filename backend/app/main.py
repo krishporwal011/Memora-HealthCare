@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends, status, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -30,6 +30,20 @@ class ConsentCreate(BaseModel):
     guardian_name: str
     guardian_relationship: str
     consent_version: str
+    guardian_note: Optional[str] = None
+    capacity_assessed: bool = True
+    capacity_notes: Optional[str] = None
+
+class OnboardingRequest(BaseModel):
+    full_name: str
+    preferred_language: str = "as"
+    initial_theta: float = 0.0
+    lacks_capacity: bool = True
+    capacity_notes: Optional[str] = None
+    guardian_name: str
+    guardian_relationship: str
+    guardian_note: Optional[str] = None
+    consent_version: str = "2026.1"
 
 class GameEventInput(BaseModel):
     id: str  # Client-generated UUIDv7
@@ -56,6 +70,10 @@ class AbilityScore(BaseModel):
 @app.get("/v1/health")
 def health_check():
     return {"status": "ok", "version": "1.0.0"}
+
+@app.post("/v1/onboarding", status_code=status.HTTP_201_CREATED)
+def onboard_patient(body: OnboardingRequest, user: AuthUser = Depends(get_current_user)):
+    return db.onboard_patient(user_id=user.user_id, data=body.model_dump())
 
 @app.get("/v1/patients")
 def list_patients(user: AuthUser = Depends(get_current_user)):
@@ -86,7 +104,17 @@ def record_consent(body: ConsentCreate, user: AuthUser = Depends(get_current_use
         guardian_name=body.guardian_name,
         guardian_relationship=body.guardian_relationship,
         consent_version=body.consent_version,
+        guardian_note=body.guardian_note,
+        capacity_assessed=body.capacity_assessed,
+        capacity_notes=body.capacity_notes,
     )
+
+@app.get("/v1/consents/{patient_id}")
+def get_consent(patient_id: str, user: AuthUser = Depends(get_current_user)):
+    consent = db.get_patient_consent(patient_id=patient_id, user_id=user.user_id)
+    if not consent:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No active consent found")
+    return consent
 
 @app.post("/v1/events:batch")
 def ingest_events_batch(body: BatchEventsRequest, user: AuthUser = Depends(get_current_user)):
