@@ -1,13 +1,37 @@
-import { useTranslations } from "next-intl";
+"use client";
+
+import { useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { OnboardingWizard } from "./OnboardingWizard";
+import { ONBOARDING_STRINGS } from "./strings";
 
 export default function CaregiverDashboardPage() {
   const t = useTranslations("Care");
   const tCommon = useTranslations("Common");
+  const locale = useLocale();
+  const strings = ONBOARDING_STRINGS[locale] || ONBOARDING_STRINGS.en;
+
+  const [isOnboarding, setIsOnboarding] = useState(false);
+  const [onboardedElder, setOnboardedElder] = useState<string | null>("Bhaben Baruah");
+
+  if (isOnboarding) {
+    return (
+      <div className="flex-1 max-w-2xl mx-auto w-full py-4 space-y-6">
+        <OnboardingWizard
+          onComplete={() => {
+            setOnboardedElder("Bhaben Baruah");
+            setIsOnboarding(false);
+          }}
+          onCancel={() => setIsOnboarding(false)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 max-w-3xl mx-auto w-full py-4 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl no-underline"
@@ -21,10 +45,42 @@ export default function CaregiverDashboardPage() {
         </span>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-sm">
-        <h2 className="text-2xl font-bold text-[#1C1C1A] mb-4">
+      {/* Onboarding Callout Card */}
+      <div className="bg-white rounded-3xl p-6 border-2 border-[#1B3B36] shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9]">
+              DPDP 2023 Consent
+            </span>
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1]">
+              ⚖️ {strings.lawyerPending}
+            </span>
+          </div>
+          <h2 className="text-xl font-bold text-[#1C1C1A]">
+            {onboardedElder ? `Registered Elder: ${onboardedElder}` : "Onboard Elder & Consent"}
+          </h2>
+          <p className="text-sm text-[#52504C]">
+            {onboardedElder
+              ? "Verifiable guardian consent active. Calibration baseline ready."
+              : "Complete the 6-step plain-language guardian consent flow."}
+          </p>
+        </div>
+        <button
+          type="button"
+          id="onboard-elder-btn"
+          onClick={() => setIsOnboarding(true)}
+          className="px-5 py-3 rounded-2xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-sm font-bold shadow-xs transition-colors shrink-0"
+          style={{ minHeight: "48px" }}
+        >
+          {onboardedElder ? "Re-evaluate Consent / Add Elder" : "Start Onboarding"}
+        </button>
+      </div>
+
+      {/* Activity Overview */}
+      <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs">
+        <h3 className="text-xl font-bold text-[#1C1C1A] mb-4">
           {t("title")}
-        </h2>
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4]">
             <span className="text-sm text-[#52504C] font-medium block">{t("todayStatus")}</span>
@@ -66,6 +122,7 @@ export default function CaregiverDashboardPage() {
         </button>
       </div>
 
+      {/* Unwell Toggle */}
       <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#D1CEC4] flex items-center justify-between">
         <div>
           <span className="font-semibold text-sm text-[#1C1C1A] block">{t("unwellToggle")}</span>
