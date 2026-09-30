@@ -1,0 +1,298 @@
+openapi: 3.1.0
+info:
+  title: Memora Backend API
+  description: Offline-first, consent-gated cognitive-stimulation and memory-assistance API for SIH26003 (MDoNER).
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+paths:
+  /v1/health:
+    get:
+      summary: Health check endpoint
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 1.0.0
+
+  /v1/patients:
+    get:
+      summary: List patients accessible by the authenticated user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+    post:
+      summary: Register a new patient
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientCreate'
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+
+  /v1/patients/{patient_id}:
+    get:
+      summary: Get patient details
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '403':
+          description: Not authorized to access this patient
+        '404':
+          description: Patient not found
+
+  /v1/consents:
+    post:
+      summary: Record verifiable consent for a patient
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentCreate'
+      responses:
+        '201':
+          description: Consent recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consent'
+        '403':
+          description: Not authorized to grant consent for this patient
+
+  /v1/events:batch:
+    post:
+      summary: Ingest a batch of offline game events (idempotent, consent-gated)
+      description: Ingests up to 200 client-generated UUIDv7 game events. Requires active consent. Duplicate event IDs are ignored without error.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchEventsRequest'
+      responses:
+        '200':
+          description: Batch processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchEventsResponse'
+        '400':
+          description: Invalid batch or batch exceeds 200 events
+        '403':
+          description: Consent required before writing patient activity data
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Patient:
+      type: object
+      required:
+        - id
+        - full_name
+        - preferred_language
+        - current_theta
+        - created_at
+      properties:
+        id:
+          type: string
+          example: 018f3a2b-8c4d-7000-8000-000000000001
+        full_name:
+          type: string
+          example: Synthetic Patient A
+        preferred_language:
+          type: string
+          example: as
+        current_theta:
+          type: number
+          format: float
+          example: 0.25
+        created_at:
+          type: string
+          format: date-time
+
+    PatientCreate:
+      type: object
+      required:
+        - full_name
+        - preferred_language
+      properties:
+        full_name:
+          type: string
+          example: Synthetic Patient A
+        preferred_language:
+          type: string
+          enum: [en, hi, as]
+          example: as
+        initial_theta:
+          type: number
+          format: float
+          default: 0.0
+
+    Consent:
+      type: object
+      required:
+        - id
+        - patient_id
+        - guardian_name
+        - guardian_relationship
+        - consent_version
+        - is_active
+        - granted_at
+      properties:
+        id:
+          type: string
+        patient_id:
+          type: string
+        guardian_name:
+          type: string
+        guardian_relationship:
+          type: string
+        consent_version:
+          type: string
+        is_active:
+          type: boolean
+        granted_at:
+          type: string
+          format: date-time
+
+    ConsentCreate:
+      type: object
+      required:
+        - patient_id
+        - guardian_name
+        - guardian_relationship
+        - consent_version
+      properties:
+        patient_id:
+          type: string
+        guardian_name:
+          type: string
+          example: Ananya Goswami
+        guardian_relationship:
+          type: string
+          example: Daughter
+        consent_version:
+          type: string
+          example: "2026.1"
+
+    GameEventInput:
+      type: object
+      required:
+        - id
+        - patient_id
+        - session_id
+        - domain
+        - item_id
+        - difficulty
+        - correct
+        - response_time_ms
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: Client-generated UUIDv7
+          example: 018f3a2b-8c4d-7123-8abc-0123456789ab
+        patient_id:
+          type: string
+        session_id:
+          type: string
+        domain:
+          type: string
+          example: memory_match
+        item_id:
+          type: string
+          example: card-bihu-01
+        difficulty:
+          type: number
+          format: float
+          example: -0.5
+        correct:
+          type: boolean
+        response_time_ms:
+          type: integer
+          example: 2450
+        timestamp:
+          type: string
+          format: date-time
+
+    BatchEventsRequest:
+      type: object
+      required:
+        - patient_id
+        - events
+      properties:
+        patient_id:
+          type: string
+        events:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/GameEventInput'
+
+    BatchEventsResponse:
+      type: object
+      required:
+        - acknowledged_ids
+        - new_theta
+        - processed_count
+      properties:
+        acknowledged_ids:
+          type: array
+          items:
+            type: string
+        new_theta:
+          type: number
+          format: float
+          example: 0.32
+        processed_count:
+          type: integer
+          example: 10
