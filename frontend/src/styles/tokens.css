@@ -1,0 +1,41 @@
+:root {
+  /* Color Palette - Dementia-Friendly High Contrast & Non-glare */
+  --canvas-bg: #F8F6F0;
+  --surface-card: #FFFFFF;
+  --surface-hover: #F2EFE9;
+  
+  --color-primary: #1B3B36;       /* Deep Forest Green (7:1+ contrast on canvas) */
+  --color-primary-hover: #122824;
+  --color-primary-text: #FFFFFF;
+
+  --color-accent: #C85A32;        /* Warm Terracotta */
+  --color-accent-hover: #A64522;
+  --color-accent-text: #FFFFFF;
+
+  --color-secondary: #D99B26;     /* Mustard Warm Ochre */
+  --color-border: #D1CEC4;
+  --color-border-focus: #1B3B36;
+
+  --color-text: #1C1C1A;          /* Charcoal Black */
+  --color-text-muted: #52504C;
+
+  --status-steady: #2D6A4F;
+  --status-watch: #B07D14;
+  --status-checkin: #A83A2A;
+
+  /* Touch Target Standards */
+  --touch-target-patient: 64px;
+  --touch-target-min: 44px;
+
+  /* Typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Atkinson Hyperlegible", "Noto Sans", sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

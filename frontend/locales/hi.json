@@ -1,0 +1,55 @@
+{
+  "_note": "Machine-assisted translation. Requires native-speaker verification.",
+  "Common": {
+    "appName": "मेमोरा",
+    "offlineNotice": "ऑफ़लाइन काम कर रहे हैं। आपकी गतिविधियां इस डिवाइस पर सुरक्षित सहेजी गई हैं।",
+    "onlineNotice": "नेटवर्क से जुड़े हैं।",
+    "back": "पीछे जाएं",
+    "next": "आगे बढ़ें",
+    "continue": "जारी रखें",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
+    "disclaimer": "मेमोरा एक संज्ञानात्मक प्रोत्साहन मंच है, यह कोई चिकित्सीय या नैदानिक उपकरण नहीं है। चिकित्सीय सलाह के लिए डॉक्टर से संपर्क करें।"
+  },
+  "Roles": {
+    "selectRole": "अपनी भूमिका चुनें",
+    "patientTitle": "गतिविधियां खेलें",
+    "patientSubtitle": "याददाश्त के खेल, गीत और शांत दैनिक गतिविधियां",
+    "caregiverTitle": "देखभालकर्ता पोर्टल",
+    "caregiverSubtitle": "पारिवारिक यादें जोड़ें और प्रगति देखें",
+    "ashaTitle": "सामुदायिक स्वास्थ्य कार्यकर्ता (आशा)",
+    "ashaSubtitle": "आवंटित बुजुर्गों की सूची और सहायता"
+  },
+  "Play": {
+    "title": "आज की गतिविधियां",
+    "startSession": "गतिविधि शुरू करें",
+    "matchGameTitle": "जोड़ी मिलान",
+    "matchGamePrompt": "मिलता-जुलता कार्ड चुनें",
+    "calmBreak": "थोड़ा विश्राम का समय",
+    "todayIs": "आज का दिन है",
+    "medicineReminder": "दवाई का समय",
+    "whoIsHome": "आज घर पर कौन है",
+    "feedbackRight": "यह बिल्कुल सही है।",
+    "feedbackHere": "यह रहा सही उत्तर।",
+    "takeRest": "आज के लिए इतना ही। अब थोड़ा विश्राम करें।"
+  },
+  "Care": {
+    "title": "देखभालकर्ता डैशबोर्ड",
+    "todayStatus": "आज की गतिविधि",
+    "sessionsPlayed": "आज खेली गई गतिविधियां",
+    "trendTitle": "14 दिनों का गतिविधि रुझान",
+    "usualRange": "सामान्य दायरा",
+    "uploadMemory": "स्मृति जोड़ें",
+    "approvalQueue": "स्मृति प्रश्नों की स्वीकृति",
+    "unwellToggle": "आज अस्वस्थ चिह्नित करें",
+    "unwellExplanation": "अस्थायी रूप से अलर्ट रोक देता है"
+  },
+  "Asha": {
+    "title": "आशा सामुदायिक सारांश",
+    "assignedElders": "आवंटित बुजुर्ग",
+    "checkinSuggested": "भेंट का सुझाव",
+    "watch": "निगरानी में",
+    "steady": "संतुलित गतिविधि",
+    "exportReport": "रिपोर्ट डाउनलोड करें (PDF)"
+  }
+}
