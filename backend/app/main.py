@@ -5,6 +5,16 @@ from typing import List, Optional, Dict, Any
 from app.auth import get_current_user, AuthUser
 from app.database import db
 from app.services.pdf_generator import generate_asha_pdf_report
+from app.services.speech import (
+    TranscribeRequest,
+    TranscribeResponse,
+    SynthesizeRequest,
+    SynthesizeResponse,
+    LanguageCoverageResponse,
+    transcribe_audio_stream,
+    synthesize_speech_stream,
+    get_language_coverage,
+)
 
 app = FastAPI(
     title="Memora Backend API",
@@ -280,6 +290,29 @@ def export_asha_patient_pdf_report(patient_id: str, user: AuthUser = Depends(get
         headers={
             "Content-Disposition": f"attachment; filename=memora-report-{patient_id[:8]}.pdf",
         },
+    )
+
+@app.get("/v1/speech/languages", response_model=LanguageCoverageResponse)
+def get_speech_coverage_info():
+    return get_language_coverage()
+
+@app.post("/v1/speech/transcribe", response_model=TranscribeResponse)
+def transcribe_speech(body: TranscribeRequest, user: AuthUser = Depends(get_current_user)):
+    try:
+        return transcribe_audio_stream(
+            audio_base64=body.audio_base64,
+            language=body.language,
+            is_explicit_tap=body.is_explicit_tap,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+@app.post("/v1/speech/synthesize", response_model=SynthesizeResponse)
+def synthesize_speech(body: SynthesizeRequest, user: AuthUser = Depends(get_current_user)):
+    return synthesize_speech_stream(
+        text=body.text,
+        language=body.language,
+        prompt_id=body.prompt_id,
     )
 
 
