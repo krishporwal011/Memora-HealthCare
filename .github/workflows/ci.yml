@@ -1,0 +1,48 @@
+name: Memora CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    name: Backend Pytest & Safety
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Pytest
+        run: pytest -v
+      - name: Run Synthetic Simulation
+        run: python scripts/simulate.py
+
+  frontend-tests:
+    name: Frontend Vitest & Next.js Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install dependencies
+        run: npm ci --prefer-offline || npm install
+      - name: Run Unit Tests
+        run: npm test
+      - name: Build Next.js PWA
+        run: npm run build
