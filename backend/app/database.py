@@ -134,9 +134,21 @@ class MemoryDatabase:
         acknowledged_ids: List[str] = []
         new_events_for_ability: List[Dict[str, Any]] = []
 
+        # Count prior events for this patient to maintain continuous K learning rate decay
+        prior_events_count = sum(
+            1 for ev in self.game_events.values() if ev.get("patient_id") == patient_id
+        )
+
         # 4. Idempotent Ingestion: ON CONFLICT (id) DO NOTHING
         for ev in events:
-            event_id = ev["id"]
+            event_id = ev.get("id")
+            if not event_id:
+                continue
+
+            # Ensure event belongs to the target patient
+            if ev.get("patient_id") != patient_id:
+                continue
+
             if event_id not in self.game_events:
                 # Store new event
                 self.game_events[event_id] = {
@@ -145,19 +157,23 @@ class MemoryDatabase:
                     "server_received_at": datetime.now(timezone.utc).isoformat(),
                 }
                 new_events_for_ability.append(ev)
-            # Acknowledge all processed event IDs (both newly stored and duplicates)
-            acknowledged_ids.append(event_id)
+
+            # Strictly acknowledge ONLY IDs that are actually stored in the database
+            if event_id in self.game_events:
+                acknowledged_ids.append(event_id)
 
         # 5. Recalculate Ability Score via 1-PL IRT
         if new_events_for_ability:
             updated_theta = batch_update_ability(
-                patient["current_theta"], new_events_for_ability
+                patient["current_theta"],
+                new_events_for_ability,
+                current_answers_count=prior_events_count,
             )
             patient["current_theta"] = updated_theta
             self.ability_scores.append({
                 "id": str(uuid.uuid4()),
                 "patient_id": patient_id,
-                "domain": events[0].get("domain", "general"),
+                "domain": new_events_for_ability[0].get("domain", "general"),
                 "theta": updated_theta,
                 "recorded_at": datetime.now(timezone.utc).isoformat(),
             })
@@ -167,6 +183,25 @@ class MemoryDatabase:
             "new_theta": patient["current_theta"],
             "processed_count": len(acknowledged_ids),
         }
+
+    def get_patient_ability_history(self, patient_id: str, user_id: str) -> List[Dict[str, Any]]:
+        """Retrieve longitudinal ability scores for a patient with RLS enforcement."""
+        if patient_id not in self.patients:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found",
+            )
+
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to access this patient",
+            )
+
+        return [
+            score for score in self.ability_scores
+            if score["patient_id"] == patient_id
+        ]
 
 
 # Global repository instance

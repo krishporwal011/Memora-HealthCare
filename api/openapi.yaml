@@ -80,6 +80,29 @@ paths:
         '404':
           description: Patient not found
 
+  /v1/patients/{patient_id}/ability:
+    get:
+      summary: Get longitudinal ability score history for a patient
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of recorded ability scores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AbilityScore'
+        '403':
+          description: Not authorized to access this patient
+
   /v1/consents:
     post:
       summary: Record verifiable consent for a patient
@@ -296,3 +319,29 @@ components:
         processed_count:
           type: integer
           example: 10
+
+    AbilityScore:
+      type: object
+      required:
+        - id
+        - patient_id
+        - domain
+        - theta
+        - recorded_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        domain:
+          type: string
+          example: memory_match
+        theta:
+          type: number
+          format: float
+          example: 0.32
+        recorded_at:
+          type: string
+          format: date-time
