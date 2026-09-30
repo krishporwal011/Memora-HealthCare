@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing";
 import { OnboardingWizard } from "./OnboardingWizard";
 import { MemoryUploadModal, type MemoryItem } from "./MemoryUploadModal";
 import { QuizApprovalQueue } from "./QuizApprovalQueue";
+import { CaregiverTrendDashboard } from "./CaregiverTrendDashboard";
 import { ONBOARDING_STRINGS } from "./strings";
 
 export default function CaregiverDashboardPage() {
@@ -111,25 +112,8 @@ export default function CaregiverDashboardPage() {
         </button>
       </div>
 
-      {/* Activity Overview */}
-      <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs">
-        <h3 className="text-xl font-bold text-[#1C1C1A] mb-4">
-          {t("title")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4]">
-            <span className="text-sm text-[#52504C] font-medium block">{t("todayStatus")}</span>
-            <span className="text-3xl font-extrabold text-[#1B3B36] mt-1 block">1 Session</span>
-            <span className="text-xs text-[#52504C] mt-2 block">Completed at 10:30 AM (Offline Synced)</span>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4]">
-            <span className="text-sm text-[#52504C] font-medium block">{t("usualRange")}</span>
-            <span className="text-3xl font-extrabold text-[#2D6A4F] mt-1 block">Steady</span>
-            <span className="text-xs text-[#52504C] mt-2 block">Within 7-day personal baseline</span>
-          </div>
-        </div>
-      </div>
+      {/* Longitudinal Caregiver Trend Dashboard (B19) */}
+      <CaregiverTrendDashboard patientName={onboardedElder || "Bhaben Baruah"} />
 
       {/* Memories Bank Management Section */}
       <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs space-y-4">
@@ -221,20 +205,6 @@ export default function CaregiverDashboardPage() {
 
       {/* AI Question Approval Queue (B15/B16) */}
       <QuizApprovalQueue patientId="patient-demo-ner" />
-
-      {/* Unwell Toggle */}
-      <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#D1CEC4] flex items-center justify-between">
-        <div>
-          <span className="font-semibold text-sm text-[#1C1C1A] block">{t("unwellToggle")}</span>
-          <span className="text-xs text-[#52504C] block">{t("unwellExplanation")}</span>
-        </div>
-        <input
-          type="checkbox"
-          id="unwell-toggle"
-          className="w-6 h-6 rounded accent-[#C85A32] cursor-pointer"
-          aria-label={t("unwellToggle")}
-        />
-      </div>
 
       {/* Upload Memory Modal */}
       {isUploadingMemory && (
