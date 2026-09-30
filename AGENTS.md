@@ -66,7 +66,7 @@ docker compose up --build
 2. **No facial emotion recognition, no always-on camera/mic.** Mic only on explicit tap. Camera only for caregiver photo upload.
 3. **Consent first.** No patient data is written before a `consents` row exists (see `docs/07_COMPLIANCE_ETHICS.md`). Guardian flow for patients who lack capacity.
 4. **Minimise data.** Store scores and events, not raw audio. Delete audio after transcription. Photos are caregiver-provided and stay in private Storage buckets.
-5. **Patient UI rules are non-negotiable** (`docs/04_DESIGN_SYSTEM.md` §Patient mode): one primary action per screen, text label on every icon, min 64px targets, no auto-moving content, no patronising praise ("good job!"), every screen self-explanatory without memory of the previous one.
+5. **Patient UI rules are non-negotiable** (`DESIGN.md` §Patient mode): one primary action per screen, text label on every icon, min 64px targets, no auto-moving content, no patronising praise ("good job!"), every screen self-explanatory without memory of the previous one.
 6. **Offline first.** Every patient-facing feature must work with no network; sync is queued and idempotent (client-generated UUIDs).
 7. **Explainable AI only.** Every alert must carry the numbers that triggered it.
 8. **Synthetic data only** in repo, demos and tests. Never commit real patient data or secrets.
@@ -74,6 +74,7 @@ docker compose up --build
 10. **Tests with every service change**; adaptive and anomaly modules must keep 100% of their unit tests green.
 11. **Changing facts come from `docs/research/`**, not from model memory: library versions, Bhashini language coverage, SIH rules, law and clinical wording. If the note is missing or older than 60 days, stop and ask the human to run the research prompt.
 12. **One agent, one branch, one brief.** Plan before build for anything touching more than 2 files. Every task ends with an AGENT REPORT. Humans merge, agents never do.
+13. **Design system compliance.** All UI work must follow `DESIGN.md`. Do not invent new colors, sizes or components.
 
 ## 8. Current state (update every session)
 - Phase: **All Phases Complete (Phase 1: Foundation B01-B05, Phase 2: Patient Core B06-B09, Phase 3: Caregiver & Memories B10-B13, Phase 4: ASHA & Clinician Triage B14-B22, Phase 5: Production Polish B23-B26).**

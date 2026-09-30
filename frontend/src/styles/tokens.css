@@ -1,27 +1,39 @@
 :root {
-  /* Color Palette - Dementia-Friendly High Contrast & Non-glare */
-  --canvas-bg: #F8F6F0;
-  --surface-card: #FFFFFF;
+  /* Canonical DESIGN.md Design System Tokens (v1) */
+  --bg: #FBF8F3;          /* warm off-white */
+  --surface: #FFFFFF;
+  --ink: #1F2933;         /* body text (contrast > 12:1 on bg) */
+  --ink-soft: #4B5563;
+  --primary: #2F6F6B;     /* calm teal (main buttons) */
+  --primary-ink: #FFFFFF;
+  --accent: #E8A33D;      /* warm amber (highlights, reminders) */
+  --success: #3E8E5A;
+  --alert: #B4452F;       /* only for real safety alerts (caregiver side) */
+  --focus: #1D4ED8;       /* 3px focus ring */
+
+  /* Aliases for backwards compatibility */
+  --canvas-bg: var(--bg);
+  --surface-card: var(--surface);
   --surface-hover: #F2EFE9;
   
-  --color-primary: #1B3B36;       /* Deep Forest Green (7:1+ contrast on canvas) */
-  --color-primary-hover: #122824;
-  --color-primary-text: #FFFFFF;
+  --color-primary: var(--primary);
+  --color-primary-hover: #235653;
+  --color-primary-text: var(--primary-ink);
 
-  --color-accent: #C85A32;        /* Warm Terracotta */
-  --color-accent-hover: #A64522;
+  --color-accent: var(--accent);
+  --color-accent-hover: #D48F29;
   --color-accent-text: #FFFFFF;
 
-  --color-secondary: #D99B26;     /* Mustard Warm Ochre */
+  --color-secondary: var(--accent);
   --color-border: #D1CEC4;
-  --color-border-focus: #1B3B36;
+  --color-border-focus: var(--focus);
 
-  --color-text: #1C1C1A;          /* Charcoal Black */
-  --color-text-muted: #52504C;
+  --color-text: var(--ink);
+  --color-text-muted: var(--ink-soft);
 
-  --status-steady: #2D6A4F;
-  --status-watch: #B07D14;
-  --status-checkin: #A83A2A;
+  --status-steady: var(--success);
+  --status-watch: var(--accent);
+  --status-checkin: var(--alert);
 
   /* Touch Target Standards */
   --touch-target-patient: 64px;
