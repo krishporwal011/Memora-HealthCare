@@ -113,7 +113,8 @@ class AnomalyDetector:
         baseline = daily_scores[:-1]  # Exclude current observation
         current = daily_scores[-1]
 
-        median, _ = compute_median_and_mad(baseline)
+        # Compute median and scaled MAD
+        median, mad_scaled = compute_median_and_mad(baseline)
         z = compute_robust_z_score(current, baseline)
         evidence["baseline_median"] = round(median, 3)
         evidence["robust_z"] = round(z, 3)
@@ -122,12 +123,28 @@ class AnomalyDetector:
         if is_unwell_today:
             evidence["suppressed"] = True
             evidence["suppression_reason"] = "Caregiver flagged patient as unwell today"
+            evidence["triggering_numbers"] = {
+                "robust_z": round(z, 3),
+                "cusum_s": 0.0,
+                "current_score": round(current, 3),
+                "baseline_median": round(median, 3),
+                "baseline_mad": round(mad_scaled, 3),
+                "sample_size": len(daily_scores),
+            }
             return evidence
 
         # 2. Suppression Check: New Device Adaptation (< 3 sessions)
         if sessions_on_current_device < 3:
             evidence["suppressed"] = True
             evidence["suppression_reason"] = "New device calibration period (< 3 sessions)"
+            evidence["triggering_numbers"] = {
+                "robust_z": round(z, 3),
+                "cusum_s": 0.0,
+                "current_score": round(current, 3),
+                "baseline_median": round(median, 3),
+                "baseline_mad": round(mad_scaled, 3),
+                "sample_size": len(daily_scores),
+            }
             return evidence
 
         # 3. Compute One-Sided CUSUM for downward drift
@@ -139,6 +156,14 @@ class AnomalyDetector:
             cusum_s = max(0.0, cusum_s + (-score_z - 0.5))
 
         evidence["cusum_s"] = round(cusum_s, 3)
+        evidence["triggering_numbers"] = {
+            "robust_z": round(z, 3),
+            "cusum_s": round(cusum_s, 3),
+            "current_score": round(current, 3),
+            "baseline_median": round(median, 3),
+            "baseline_mad": round(mad_scaled, 3),
+            "sample_size": len(daily_scores),
+        }
 
         # Trigger conditions:
         # a) Acute dip: z < -2.5
@@ -160,3 +185,54 @@ class AnomalyDetector:
             )
 
         return evidence
+
+
+def calculate_daily_scores(events: List[Dict[str, Any]]) -> Dict[str, List[float]]:
+    """
+    Aggregate activity events by day and domain into chronological daily accuracy scores.
+    Returns a dictionary mapping each domain to a chronological list of daily scores [0.0 - 1.0].
+    """
+    if not events:
+        return {}
+
+    # Group by domain and date (YYYY-MM-DD)
+    domain_dates: Dict[str, Dict[str, List[bool]]] = {}
+    overall_dates: Dict[str, List[bool]] = {}
+
+    for ev in events:
+        ts = ev.get("timestamp") or ev.get("created_at") or ""
+        date_key = ts[:10] if len(ts) >= 10 else "unknown"
+        if date_key == "unknown":
+            continue
+
+        domain = ev.get("domain", "general")
+        correct = bool(ev.get("correct", False))
+
+        if domain not in domain_dates:
+            domain_dates[domain] = {}
+        if date_key not in domain_dates[domain]:
+            domain_dates[domain][date_key] = []
+        domain_dates[domain][date_key].append(correct)
+
+        if date_key not in overall_dates:
+            overall_dates[date_key] = []
+        overall_dates[date_key].append(correct)
+
+    result: Dict[str, List[float]] = {}
+
+    for domain, dates in domain_dates.items():
+        sorted_dates = sorted(dates.keys())
+        daily_scores = [
+            round(sum(1 for c in dates[d] if c) / len(dates[d]), 4)
+            for d in sorted_dates
+        ]
+        result[domain] = daily_scores
+
+    # Include overall composite
+    sorted_overall_dates = sorted(overall_dates.keys())
+    result["overall"] = [
+        round(sum(1 for c in overall_dates[d] if c) / len(overall_dates[d]), 4)
+        for d in sorted_overall_dates
+    ]
+
+    return result
