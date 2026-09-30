@@ -46,6 +46,13 @@ class BatchEventsRequest(BaseModel):
     patient_id: str
     events: List[GameEventInput] = Field(..., max_length=200)
 
+class AbilityScore(BaseModel):
+    id: str
+    patient_id: str
+    domain: str
+    theta: float
+    recorded_at: str
+
 @app.get("/v1/health")
 def health_check():
     return {"status": "ok", "version": "1.0.0"}
@@ -66,6 +73,10 @@ def create_patient(body: PatientCreate, user: AuthUser = Depends(get_current_use
 @app.get("/v1/patients/{patient_id}")
 def get_patient(patient_id: str, user: AuthUser = Depends(get_current_user)):
     return db.get_patient(patient_id, user.user_id)
+
+@app.get("/v1/patients/{patient_id}/ability", response_model=List[AbilityScore])
+def get_patient_ability(patient_id: str, user: AuthUser = Depends(get_current_user)):
+    return db.get_patient_ability_history(patient_id=patient_id, user_id=user.user_id)
 
 @app.post("/v1/consents", status_code=status.HTTP_201_CREATED)
 def record_consent(body: ConsentCreate, user: AuthUser = Depends(get_current_user)):
