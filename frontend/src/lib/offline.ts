@@ -36,16 +36,26 @@ export class MemoraDatabase extends Dexie {
 
 export const db = new MemoraDatabase();
 
+let lastMs = 0;
+let seqCount = 0;
+
 /**
  * Generate a UUIDv7 (timestamp-ordered UUID) client-side.
- * Conforms to RFC 9562 for monotonically sortable unique identifiers.
+ * Conforms to RFC 9562 with sub-millisecond monotonic counter for strict orderability.
  */
 export function generateUUIDv7(): string {
-  const now = Date.now();
+  let now = Date.now();
+  if (now === lastMs) {
+    seqCount = (seqCount + 1) & 0x0fff; // 12-bit sequence counter
+  } else {
+    lastMs = now;
+    seqCount = 0;
+  }
+
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
 
-  // Timestamp in ms (48 bits)
+  // Timestamp in ms (48 bits: bytes 0-5)
   bytes[0] = (now / 0x10000000000) & 0xff;
   bytes[1] = (now / 0x100000000) & 0xff;
   bytes[2] = (now / 0x1000000) & 0xff;
@@ -53,8 +63,10 @@ export function generateUUIDv7(): string {
   bytes[4] = (now / 0x100) & 0xff;
   bytes[5] = now & 0xff;
 
-  // Version 7: set bits 4-7 to 0111 (0x70)
-  bytes[6] = 0x70 | (bytes[6] & 0x0f);
+  // Version 7 (0x70) in top 4 bits of byte 6 + top 4 bits of seqCount
+  bytes[6] = 0x70 | ((seqCount >> 8) & 0x0f);
+  // Bottom 8 bits of seqCount in byte 7
+  bytes[7] = seqCount & 0xff;
 
   // Variant 1 (RFC 4122/9562): set bits 6-7 to 10 (0x80)
   bytes[8] = 0x80 | (bytes[8] & 0x3f);
