@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { OnboardingWizard } from "./OnboardingWizard";
+import { MemoryUploadModal, type MemoryItem } from "./MemoryUploadModal";
 import { ONBOARDING_STRINGS } from "./strings";
 
 export default function CaregiverDashboardPage() {
@@ -14,6 +15,39 @@ export default function CaregiverDashboardPage() {
 
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [onboardedElder, setOnboardedElder] = useState<string | null>("Bhaben Baruah");
+  const [isUploadingMemory, setIsUploadingMemory] = useState(false);
+
+  // Initial memories bank with NER cultural artifacts
+  const [memories, setMemories] = useState<MemoryItem[]>([
+    {
+      id: "mem-01",
+      memory_type: "photo",
+      caption: "Rongali Bihu harvest celebration at ancestral home in Tezpur",
+      people: ["Grandmother", "Ranjit", "Jonali"],
+      year: 1985,
+      is_approved: true,
+      created_at: "2026-09-28T10:00:00Z",
+    },
+    {
+      id: "mem-02",
+      memory_type: "song",
+      caption: "Old Goalpariya folk song sung during family gatherings",
+      people: ["Bhaben Baruah", "Pratima"],
+      year: 1974,
+      is_approved: true,
+      created_at: "2026-09-29T14:30:00Z",
+    },
+  ]);
+
+  const toggleApproval = (id: string) => {
+    setMemories((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, is_approved: !m.is_approved } : m))
+    );
+  };
+
+  const deleteMemory = (id: string) => {
+    setMemories((prev) => prev.filter((m) => m.id !== id));
+  };
 
   if (isOnboarding) {
     return (
@@ -72,7 +106,7 @@ export default function CaregiverDashboardPage() {
           className="px-5 py-3 rounded-2xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-sm font-bold shadow-xs transition-colors shrink-0"
           style={{ minHeight: "48px" }}
         >
-          {onboardedElder ? "Re-evaluate Consent / Add Elder" : "Start Onboarding"}
+          {onboardedElder ? "Re-evaluate Consent" : "Start Onboarding"}
         </button>
       </div>
 
@@ -96,30 +130,92 @@ export default function CaregiverDashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <button
-          type="button"
-          className="p-5 rounded-2xl bg-white border-2 border-[#D1CEC4] hover:border-[#C85A32] text-left transition-colors flex items-center justify-between"
-          style={{ minHeight: "64px" }}
-        >
+      {/* Memories Bank Management Section */}
+      <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <span className="font-bold text-lg text-[#1C1C1A] block">{t("uploadMemory")}</span>
-            <span className="text-xs text-[#52504C]">Photos, songs, and family stories</span>
+            <h3 className="text-xl font-bold text-[#1C1C1A]">Family Memories Bank</h3>
+            <p className="text-xs text-[#52504C]">
+              Private photos, songs, and family stories used to personalize reminiscence activities.
+            </p>
           </div>
-          <span className="text-2xl" aria-hidden="true">📸</span>
-        </button>
+          <button
+            type="button"
+            id="upload-memory-btn"
+            onClick={() => setIsUploadingMemory(true)}
+            className="px-4 py-2.5 rounded-xl bg-[#C85A32] hover:bg-[#B04C28] text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
+            style={{ minHeight: "44px" }}
+          >
+            <span aria-hidden="true">➕</span>
+            <span>Add Memory</span>
+          </button>
+        </div>
 
-        <button
-          type="button"
-          className="p-5 rounded-2xl bg-white border-2 border-[#D1CEC4] hover:border-[#1B3B36] text-left transition-colors flex items-center justify-between"
-          style={{ minHeight: "64px" }}
-        >
-          <div>
-            <span className="font-bold text-lg text-[#1C1C1A] block">{t("approvalQueue")}</span>
-            <span className="text-xs text-[#52504C]">Review AI drafted questions</span>
-          </div>
-          <span className="text-2xl" aria-hidden="true">📝</span>
-        </button>
+        {/* List of Memories */}
+        <div className="space-y-3 pt-2">
+          {memories.map((mem) => (
+            <div
+              key={mem.id}
+              className="p-4 rounded-2xl bg-[#F8F6F0] border border-[#D1CEC4] flex flex-col md:flex-row items-start md:items-center justify-between gap-3"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl p-2 bg-white rounded-xl border border-[#D1CEC4]" aria-hidden="true">
+                  {mem.memory_type === "photo" ? "📸" : mem.memory_type === "song" ? "🎵" : "📖"}
+                </span>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#52504C]">
+                      {mem.memory_type}
+                    </span>
+                    {mem.year && (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-white border border-[#D1CEC4] text-[#1C1C1A]">
+                        {mem.year}
+                      </span>
+                    )}
+                    {mem.is_offline_pending && (
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#FFF8E7] text-[#7A5800] border border-[#E0D0A0]">
+                        Saved locally
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="text-sm md:text-base font-bold text-[#1C1C1A] leading-snug">
+                    {mem.caption}
+                  </h4>
+                  {mem.people.length > 0 && (
+                    <span className="text-xs text-[#52504C] block">
+                      With: {mem.people.join(", ")}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-end md:self-center">
+                {/* Approval toggle */}
+                <button
+                  type="button"
+                  onClick={() => toggleApproval(mem.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors ${
+                    mem.is_approved
+                      ? "bg-[#EAF3EE] text-[#1B3B36] border-[#A7D1B9]"
+                      : "bg-[#FDF1EC] text-[#9A3412] border-[#F5C2B1]"
+                  }`}
+                  style={{ minHeight: "36px" }}
+                >
+                  {mem.is_approved ? "✓ Approved" : "Pending"}
+                </button>
+                {/* Delete button */}
+                <button
+                  type="button"
+                  onClick={() => deleteMemory(mem.id)}
+                  aria-label="Delete memory"
+                  className="p-2 text-[#52504C] hover:text-[#9A3412] text-sm rounded-lg"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Unwell Toggle */}
@@ -135,6 +231,17 @@ export default function CaregiverDashboardPage() {
           aria-label={t("unwellToggle")}
         />
       </div>
+
+      {/* Upload Memory Modal */}
+      {isUploadingMemory && (
+        <MemoryUploadModal
+          patientId="patient-demo-ner"
+          onClose={() => setIsUploadingMemory(false)}
+          onMemoryAdded={(newMem) => {
+            setMemories((prev) => [newMem, ...prev]);
+          }}
+        />
+      )}
     </div>
   );
 }
