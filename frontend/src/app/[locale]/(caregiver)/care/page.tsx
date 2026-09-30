@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { OnboardingWizard } from "./OnboardingWizard";
 import { MemoryUploadModal, type MemoryItem } from "./MemoryUploadModal";
+import { QuizApprovalQueue } from "./QuizApprovalQueue";
 import { ONBOARDING_STRINGS } from "./strings";
 
 export default function CaregiverDashboardPage() {
@@ -217,6 +218,9 @@ export default function CaregiverDashboardPage() {
           ))}
         </div>
       </div>
+
+      {/* AI Question Approval Queue (B15/B16) */}
+      <QuizApprovalQueue patientId="patient-demo-ner" />
 
       {/* Unwell Toggle */}
       <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#D1CEC4] flex items-center justify-between">

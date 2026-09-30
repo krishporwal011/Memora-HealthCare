@@ -20,6 +20,7 @@ import {
   OrientationCardData,
 } from "@/lib/session";
 import { processAnswer, selectNextItem } from "@/lib/adaptive";
+import { PhotoQuestionActivity } from "./PhotoQuestionActivity";
 
 interface CardItem {
   id: string;
@@ -34,8 +35,8 @@ export default function PatientPlayPage() {
   const tCommon = useTranslations("Common");
   const locale = useLocale();
 
-  // Screen modes: 'home' | 'playing' | 'break' | 'completed'
-  const [screenMode, setScreenMode] = useState<"home" | "playing" | "break" | "completed">("home");
+  // Screen modes: 'home' | 'playing' | 'photo_quiz' | 'break' | 'completed'
+  const [screenMode, setScreenMode] = useState<"home" | "playing" | "photo_quiz" | "break" | "completed">("home");
 
   // Session state
   const [sessionCtx, setSessionCtx] = useState<SessionContext>(() =>
@@ -276,7 +277,7 @@ export default function PatientPlayPage() {
             </p>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-4 space-y-3">
             <BigButton
               label={t("startSession")}
               icon="▶️"
@@ -284,11 +285,27 @@ export default function PatientPlayPage() {
               onClick={handleStartSession}
               aria-label={t("startSession")}
             />
+            <BigButton
+              label="Family Photo Memories"
+              icon="📸"
+              variant="accent"
+              onClick={() => setScreenMode("photo_quiz")}
+              aria-label="Play Family Photo Memories"
+            />
           </div>
         </>
       )}
 
-      {/* 2. PLAYING ADAPTIVE MATCH */}
+      {/* 2. PLAYING PHOTO QUESTION QUIZ */}
+      {screenMode === "photo_quiz" && (
+        <PhotoQuestionActivity
+          patientId={sessionCtx.state.patientId}
+          onComplete={() => setScreenMode("completed")}
+          onExit={() => setScreenMode("home")}
+        />
+      )}
+
+      {/* 3. PLAYING ADAPTIVE MATCH */}
       {screenMode === "playing" && (
         <div className="space-y-6">
           <div className="text-center">
