@@ -1,0 +1,55 @@
+{
+  "_note": "Machine-assisted translation. Requires native-speaker verification.",
+  "Common": {
+    "appName": "মেমোরা",
+    "offlineNotice": "ওফলাইনদা থবক তৌরি। নহাক্কী থবকশিং অসি দিভাইস অসিদা কনবা ওইনা থম্লে।",
+    "onlineNotice": "নেতৱার্ককা শম্নরে।",
+    "back": "হঞ্জিল্লু",
+    "next": "মমাংদা",
+    "continue": "মখা চত্থউ",
+    "cancel": "তোকপা",
+    "confirm": "চেকশিনবা",
+    "disclaimer": "মেমোরা অসি ৱাখল পোকহনবগী প্লেটফোর্ম অমনি, মসি হিদাক-লাংথক নত্রগা লাইনা য়েংশিনবগী খুৎলাই নত্তে। হকশেলগী ৱাফমশিংগীদমক দাক্তরদা তন্নবীয়ু।"
+  },
+  "Roles": {
+    "selectRole": "নহাক্কী থৌদাং খনগৎলু",
+    "patientTitle": "থবকশিং শান্নৌ",
+    "patientSubtitle": "নীংশিংবা শান্নপোৎ, ঈশৈ অমসুং নুমিৎ খুদিংগী শান্নবা",
+    "caregiverTitle": "য়েংশিনবগী পোর্তাল",
+    "caregiverSubtitle": "ইমুংগী নীংশিংবা হাপচিল্লু অমসুং মাংজিল থাবা য়েংঙু",
+    "ashaTitle": "খুনাইগী আশা কর্মী",
+    "ashaSubtitle": "শীন্নরিবা অহলশিংগী অকোয়বা অমসুং তেংবাং"
+  },
+  "Play": {
+    "title": "ঙসিগী থবকশিং",
+    "startSession": "থবক হৌবা",
+    "matchGameTitle": "মান্নবা মচা য়ৌহনবা",
+    "matchGamePrompt": "মান্নবা কার্দ খনগৎলু",
+    "calmBreak": "পোথারবা মতম",
+    "todayIs": "ঙসিগী নুমিৎ অসি",
+    "medicineReminder": "হিদাক থকপগী মতম",
+    "whoIsHome": "ঙসি য়ুমদা কনানো লৈরিবা",
+    "feedbackRight": "মসি চুম্লে।",
+    "feedbackHere": "মসিনা অচুম্বা পাউখুম্নি।",
+    "takeRest": "ঙসি ফনা শান্নরে। হৌজিক পোথারসি।"
+  },
+  "Care": {
+    "title": "য়েংশিনবগী দেশবোর্দ",
+    "todayStatus": "ঙসিগী থবক",
+    "sessionsPlayed": "ঙসি শান্নখিবা থবকশিং",
+    "trendTitle": "নুমিৎ ১৪ গী থবক খোঙজেল",
+    "usualRange": "তৌনবী মতুং ইন্না",
+    "uploadMemory": "নীংশিংবা হাপচিল্লু",
+    "approvalQueue": "নীংশিংবা ৱাহং অয়াবা",
+    "unwellToggle": "ঙসি হকচাং য়াম্না ফত্তে খনগৎলু",
+    "unwellExplanation": "চেকশিনৱা পাউজেল মতম খরগী লেপহনগনি"
+  },
+  "Asha": {
+    "title": "আশা খুনাইগী অকুপ্পা ৱাফম",
+    "assignedElders": "শীন্নরিবা অহলশিং",
+    "checkinSuggested": "উন্নবগী ৱাফম লৈ",
+    "watch": "য়েংশিন্দুনা লৈয়ু",
+    "steady": "অকক্নবা খোঙজেল",
+    "exportReport": "সমরি দাউনলোদ তৌ (PDF)"
+  }
+}

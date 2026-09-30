@@ -12,6 +12,9 @@ export function Header() {
     { code: "en", label: "English" },
     { code: "hi", label: "हिन्दी" },
     { code: "as", label: "অসমীয়া" },
+    { code: "bn", label: "বাংলা" },
+    { code: "brx", label: "बड़ो" },
+    { code: "mni", label: "মৈতৈলোন্" },
   ];
 
   return (

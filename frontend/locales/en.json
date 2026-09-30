@@ -8,7 +8,7 @@
     "continue": "Continue",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "disclaimer": "Memora is a cognitive stimulation platform, not a medical or diagnostic device. For medical questions, consult a doctor."
+    "disclaimer": "Memora is a cognitive stimulation platform, not a medical device. For medical questions, consult a doctor."
   },
   "Roles": {
     "selectRole": "Select Your Role",

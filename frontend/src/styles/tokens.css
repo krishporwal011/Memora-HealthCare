@@ -27,8 +27,11 @@
   --touch-target-patient: 64px;
   --touch-target-min: 44px;
 
-  /* Typography */
-  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Atkinson Hyperlegible", "Noto Sans", sans-serif;
+  /* Typography - Atkinson Hyperlegible for low-vision & Noto Sans per script */
+  --font-family-base: "Atkinson Hyperlegible", "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-devanagari: "Noto Sans Devanagari", "Atkinson Hyperlegible", sans-serif;
+  --font-family-bengali: "Noto Sans Bengali", "Atkinson Hyperlegible", sans-serif;
+  --font-family-meetei: "Noto Sans Meetei Mayek", "Noto Sans", sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {
