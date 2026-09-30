@@ -1,0 +1,55 @@
+{
+  "_note": "Machine-assisted translation. Requires native-speaker verification.",
+  "Common": {
+    "appName": "মেমোৰা",
+    "offlineNotice": "অফলাইনত চলি আছে। আপোনাৰ কাৰ্যকলাপ এই যন্ত্ৰত সুৰক্ষিতভাৱে সংৰক্ষিত হৈছে।",
+    "onlineNotice": "নেটৱৰ্কৰ সৈতে সংযোগ হৈছে।",
+    "back": "উভতি যাওক",
+    "next": "আগলৈ",
+    "continue": "অব্যাহত ৰাখক",
+    "cancel": "বাতিল কৰক",
+    "confirm": "নিশ্চিত কৰক",
+    "disclaimer": "মেমোৰা এটি জ্ঞানীয় উদ্দীপনা মঞ্চ, ই কোনো চিকিৎসাজনিত বা নিদানমূলক সঁজুলি নহয়। স্বাস্থ্যৰ বাবে চিকিৎসকৰ পৰামৰ্শ লওক।"
+  },
+  "Roles": {
+    "selectRole": "আপোনাৰ ভূমিকা বাছক",
+    "patientTitle": "কাৰ্যকলাপ আৰম্ভ কৰক",
+    "patientSubtitle": "স্মৃতিৰ খেল, গীত আৰু শান্ত দৈনন্দিন কাৰ্যসূচী",
+    "caregiverTitle": "যত্নদাতা পৰ্টেল",
+    "caregiverSubtitle": "পাৰিবাৰিক স্মৃতি যোগ কৰক আৰু অগ্ৰগতি চাওক",
+    "ashaTitle": "আশা কৰ্মী পৰ্টেল",
+    "ashaSubtitle": "দায়িত্বপ্ৰাপ্ত জ্যেষ্ঠসকলৰ অৱস্থা আৰু সহায়"
+  },
+  "Play": {
+    "title": "আজিৰ কাৰ্যসূচী",
+    "startSession": "কাৰ্যকলাপ আৰম্ভ কৰক",
+    "matchGameTitle": "যোৰ মিলোৱা খেল",
+    "matchGamePrompt": "মিলা কাৰ্ডখন বাছক",
+    "calmBreak": "অলপ জিৰণি লোৱাৰ সময়",
+    "todayIs": "আজি হ'ল",
+    "medicineReminder": "ঔষধৰ সময়",
+    "whoIsHome": "আজি ঘৰত কোন আছে",
+    "feedbackRight": "এইটো একেবাৰে শুদ্ধ।",
+    "feedbackHere": "এইটোৱেই শুদ্ধ উত্তৰ।",
+    "takeRest": "আজিৰ বাবে যথেষ্ট হ'ল। এতিয়া জিৰণি লওক।"
+  },
+  "Care": {
+    "title": "যত্নদাতা ডেশ্ববৰ্ড",
+    "todayStatus": "আজিৰ অগ্ৰগতি",
+    "sessionsPlayed": "আজি সম্পন্ন কৰা কাৰ্যসূচী",
+    "trendTitle": "১৪ দিনৰ কাৰ্যকলাপৰ গতিবিধি",
+    "usualRange": "স্বাভাৱিক সীমা",
+    "uploadMemory": "স্মৃতি যোগ কৰক",
+    "approvalQueue": "স্মৃতি প্ৰশ্ন অনুমোদন",
+    "unwellToggle": "আজি অসুস্থ বুলি চিহ্নিত কৰক",
+    "unwellExplanation": "সাময়িকভাৱে স্বয়ংক্ৰিয় সতৰ্কবাৰ্তা বন্ধ ৰাখে"
+  },
+  "Asha": {
+    "title": "আশা সমবায় পৰিদৰ্শন",
+    "assignedElders": "দায়িত্বপ্ৰাপ্ত জ্যেষ্ঠসকল",
+    "checkinSuggested": "দেখা কৰাৰ পৰামৰ্শ",
+    "watch": "নিৰীক্ষণত ৰাখক",
+    "steady": "স্থিৰ গতিবিধি",
+    "exportReport": "বিৱৰণী ডাউনলোড কৰক (PDF)"
+  }
+}

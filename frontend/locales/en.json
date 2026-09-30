@@ -1,0 +1,54 @@
+{
+  "Common": {
+    "appName": "Memora",
+    "offlineNotice": "Working offline. Your activities are safely saved on this device.",
+    "onlineNotice": "Connected to network.",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "disclaimer": "Memora is a cognitive stimulation platform, not a medical or diagnostic device. For medical questions, consult a doctor."
+  },
+  "Roles": {
+    "selectRole": "Select Your Role",
+    "patientTitle": "Play Activities",
+    "patientSubtitle": "Memory games, songs, and calm daily activities",
+    "caregiverTitle": "Caregiver Portal",
+    "caregiverSubtitle": "Upload family memories and view activity trends",
+    "ashaTitle": "Community Worker (ASHA)",
+    "ashaSubtitle": "Assigned elder overview and check-in support"
+  },
+  "Play": {
+    "title": "Today's Activities",
+    "startSession": "Start Activity",
+    "matchGameTitle": "Memory Match",
+    "matchGamePrompt": "Find the matching card",
+    "calmBreak": "Time for a calm break",
+    "todayIs": "Today is",
+    "medicineReminder": "Medicine check",
+    "whoIsHome": "Who is home today",
+    "feedbackRight": "That is right.",
+    "feedbackHere": "Here is the answer.",
+    "takeRest": "Well played. Let us rest for now."
+  },
+  "Care": {
+    "title": "Caregiver Dashboard",
+    "todayStatus": "Today's Activity",
+    "sessionsPlayed": "Activities played today",
+    "trendTitle": "14-Day Activity Trend",
+    "usualRange": "Usual Range",
+    "uploadMemory": "Add a Memory",
+    "approvalQueue": "Memory Questions Approval",
+    "unwellToggle": "Mark as unwell today",
+    "unwellExplanation": "Temporarily pauses automatic change alerts"
+  },
+  "Asha": {
+    "title": "ASHA Community Overview",
+    "assignedElders": "Assigned Elders",
+    "checkinSuggested": "Check-in suggested",
+    "watch": "Keep observing",
+    "steady": "Steady activity",
+    "exportReport": "Download Summary (PDF)"
+  }
+}
