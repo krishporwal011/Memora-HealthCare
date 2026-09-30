@@ -76,10 +76,10 @@ docker compose up --build
 12. **One agent, one branch, one brief.** Plan before build for anything touching more than 2 files. Every task ends with an AGENT REPORT. Humans merge, agents never do.
 
 ## 8. Current state (update every session)
-- Phase: **Phase 0 done (docs, schema, prototype, adaptive + anomaly services with tests). Phase 1 starting: research R1-R10 in ChatGPT, build B01-B26 in Antigravity.**
-- Done: PRD, architecture, flowcharts, design system, UI prototype, DB schema, OpenAPI, adaptive + anomaly services with tests, agent setup files (GEMINI.md, .agent/), build plan, research prompts.
-- Next: run R1, R3, R4, R7 first (they block scaffold, speech, consent and versions). Then B01 (plan scaffold) -> B02 (scaffold) -> B03 (auth + consent + events).
-- Research status: R1 [ ] R2 [ ] R3 [ ] R4 [ ] R5 [ ] R6 [ ] R7 [ ] R8 [ ] R9 [ ] R10 [ ]  (tick when the note exists in docs/research/)
+- Phase: **Phase 1 in progress (Foundation: B01-B05). Antigravity workspace bootstrapped (.agents / .agent). Prerequisite research notes R1, R3, R4, R7 completed.**
+- Done: PRD & specs, build plan, agent setup files (GEMINI.md, .agent/, .agents/), bootstrap script, research notes R1, R3, R4, R7.
+- Next: B01 (A0 plan scaffold) -> B02 (A2 build scaffold) -> B03 (A1 auth + consent + events) -> B04 (A3 adaptive simulation) -> B05 (A4 test baseline).
+- Research status: R1 [x] R2 [ ] R3 [x] R4 [x] R5 [ ] R6 [ ] R7 [x] R8 [ ] R9 [ ] R10 [ ]  (tick when the note exists in docs/research/)
 - Known gaps: native-speaker review of Assamese/Hindi strings; Bhashini credentials not yet obtained; ASR coverage per NER language unverified; legal/clinical wording not yet reviewed by a lawyer/clinician.
 
 ## 9. Decision log (append only)
@@ -92,6 +92,7 @@ docker compose up --build
 | 2026-10 | No face-emotion recognition | Privacy and accuracy risk for vulnerable users |
 | 2026-10 | ChatGPT = teacher + research (Deep Research, Thinking); Antigravity = builder | Separate learning and sourcing from typing; every agent task has a brief and a report |
 | 2026-10 | Research notes stored in docs/research/ with date and source URLs | Changing facts must be traceable and re-checkable |
+| 2026-10 | Pin Next.js 16.3 + React 19 + Tailwind v4 + Serwist 9.5 | Verified stable npm releases with mutual compatibility (R7) |
 
 ## 10. Glossary
 ASHA: Accredited Social Health Activist. ANM: Auxiliary Nurse Midwife. PHC: Primary Health Centre. NER: North Eastern Region. RLS: Row Level Security. Reminiscence: activities using a person's own past (photos, songs). θ (theta): patient ability. b: item difficulty.
