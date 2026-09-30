@@ -5,135 +5,203 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { BigButton } from "@/components/patient/BigButton";
 import { recordGameEventOffline, generateUUIDv7 } from "@/lib/offline";
+import {
+  CULTURAL_ITEM_BANK,
+  createInitialSession,
+  getDefaultOrientationData,
+  handleTurnTimeoutOrError,
+  SessionContext,
+  OrientationCardData,
+} from "@/lib/session";
+import { processAnswer, selectNextItem } from "@/lib/adaptive";
 
 interface CardItem {
   id: string;
   name: string;
   icon: string;
   pairKey: string;
+  hint?: string;
 }
-
-const CULTURAL_ITEMS = [
-  { nameKey: "gamosa", icon: "🧣", nameDefault: "Gamosa" },
-  { nameKey: "chai", icon: "🍃", nameDefault: "Chai Leaf" },
-  { nameKey: "dhol", icon: "🥁", nameDefault: "Dhol" },
-  { nameKey: "jaapi", icon: "👒", nameDefault: "Jaapi" },
-];
 
 export default function PatientPlayPage() {
   const t = useTranslations("Play");
   const tCommon = useTranslations("Common");
   const locale = useLocale();
 
-  // Screen states: 'home' | 'playing' | 'completed'
-  const [gameState, setGameState] = useState<"home" | "playing" | "completed">("home");
+  // Screen modes: 'home' | 'playing' | 'break' | 'completed'
+  const [screenMode, setScreenMode] = useState<"home" | "playing" | "break" | "completed">("home");
 
-  // Game state
+  // Session state
+  const [sessionCtx, setSessionCtx] = useState<SessionContext>(() =>
+    createInitialSession("patient-demo-ner", 0.0)
+  );
+  const [orientationData, setOrientationData] = useState<OrientationCardData>(getDefaultOrientationData);
+
+  // Active game cards
   const [cards, setCards] = useState<CardItem[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [matchedKeys, setMatchedKeys] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<string>("");
-  const [sessionId, setSessionId] = useState<string>("");
+  const [hintMessage, setHintMessage] = useState<string>("");
 
+  const turnTimerRef = useRef<NodeJS.Timeout | null>(null);
   const turnStartTimeRef = useRef<number>(Date.now());
-  const patientId = "patient-demo-ner";
 
-  // Start new game session
-  const handleStartGame = () => {
-    const newSessionId = generateUUIDv7();
-    setSessionId(newSessionId);
+  // 20-second gentle inactivity timer (prompts a hint without alarm bells)
+  useEffect(() => {
+    if (screenMode !== "playing") {
+      if (turnTimerRef.current) clearTimeout(turnTimerRef.current);
+      return;
+    }
 
-    // Create 4-card deck (2 pairs) for calm, non-overwhelming memory stimulation
-    const selectedPairs = CULTURAL_ITEMS.slice(0, 2);
-    const deck: CardItem[] = [];
-
-    selectedPairs.forEach((item, pairIdx) => {
-      deck.push({
-        id: `card_${pairIdx}_a`,
-        name: item.nameDefault,
-        icon: item.icon,
-        pairKey: item.nameKey,
+    turnTimerRef.current = setTimeout(() => {
+      // 20 seconds passed without answer: trigger hint
+      setSessionCtx((prev) => {
+        const updated = handleTurnTimeoutOrError(prev);
+        if (updated.hintShown && !updated.answerRevealed) {
+          setHintMessage("Look closely at the items with green leaves.");
+        } else if (updated.answerRevealed) {
+          setFeedback(t("feedbackHere"));
+        }
+        return updated;
       });
-      deck.push({
-        id: `card_${pairIdx}_b`,
-        name: item.nameDefault,
-        icon: item.icon,
-        pairKey: item.nameKey,
-      });
-    });
+    }, 20000); // 20 seconds
 
-    // Gentle deterministic shuffle
+    return () => {
+      if (turnTimerRef.current) clearTimeout(turnTimerRef.current);
+    };
+  }, [screenMode, flippedIndices, t]);
+
+  // Start adaptive session
+  const handleStartSession = () => {
+    const newCtx = createInitialSession("patient-demo-ner", sessionCtx.state.theta);
+    setSessionCtx(newCtx);
+
+    // Pick 2 items nearest to current optimal difficulty b*
+    const targetItem = newCtx.currentItem || CULTURAL_ITEM_BANK[0];
+    const candidate2 =
+      selectNextItem(CULTURAL_ITEM_BANK, newCtx.state.theta, [targetItem.id]) ||
+      CULTURAL_ITEM_BANK[1];
+
+    const deck: CardItem[] = [
+      {
+        id: "c1",
+        name: (targetItem.content as { name: string }).name,
+        icon: (targetItem.content as { icon: string }).icon,
+        pairKey: targetItem.id,
+        hint: (targetItem.content as { hint: string }).hint,
+      },
+      {
+        id: "c2",
+        name: (targetItem.content as { name: string }).name,
+        icon: (targetItem.content as { icon: string }).icon,
+        pairKey: targetItem.id,
+        hint: (targetItem.content as { hint: string }).hint,
+      },
+      {
+        id: "c3",
+        name: (candidate2.content as { name: string }).name,
+        icon: (candidate2.content as { icon: string }).icon,
+        pairKey: candidate2.id,
+        hint: (candidate2.content as { hint: string }).hint,
+      },
+      {
+        id: "c4",
+        name: (candidate2.content as { name: string }).name,
+        icon: (candidate2.content as { icon: string }).icon,
+        pairKey: candidate2.id,
+        hint: (candidate2.content as { hint: string }).hint,
+      },
+    ];
+
     deck.sort(() => Math.random() - 0.5);
 
     setCards(deck);
     setFlippedIndices([]);
     setMatchedKeys([]);
     setFeedback("");
-    setGameState("playing");
+    setHintMessage("");
+    setScreenMode("playing");
     turnStartTimeRef.current = Date.now();
   };
 
-  // Handle card tap
+  // Card click interaction
   const handleCardClick = async (index: number) => {
-    // Prevent clicking if already 2 flipped or already matched
     if (flippedIndices.length === 2 || flippedIndices.includes(index)) return;
     const card = cards[index];
     if (matchedKeys.includes(card.pairKey)) return;
 
+    // Clear timeout timer on active response
+    if (turnTimerRef.current) clearTimeout(turnTimerRef.current);
+
     const newFlipped = [...flippedIndices, index];
     setFlippedIndices(newFlipped);
 
-    // If this is the second card of the turn, evaluate match
     if (newFlipped.length === 2) {
       const firstCard = cards[newFlipped[0]];
       const secondCard = cards[newFlipped[1]];
       const responseTimeMs = Date.now() - turnStartTimeRef.current;
       const isMatch = firstCard.pairKey === secondCard.pairKey;
 
-      // Offline event logging with UUIDv7
+      // Process answer in adaptive engine
+      const currentItem = sessionCtx.currentItem || CULTURAL_ITEM_BANK[0];
+      const updatedAdaptiveState = processAnswer(sessionCtx.state, currentItem, isMatch);
+
+      // Record offline event
       await recordGameEventOffline({
-        patient_id: patientId,
-        session_id: sessionId,
+        patient_id: sessionCtx.state.patientId,
+        session_id: `session-${sessionCtx.state.sessionStartTime}`,
         domain: "memory_match",
-        item_id: `match_${firstCard.pairKey}_${secondCard.pairKey}`,
-        difficulty: -0.8, // Calibrated difficulty
+        item_id: currentItem.id,
+        difficulty: currentItem.difficulty,
         correct: isMatch,
         response_time_ms: responseTimeMs,
       });
 
+      setSessionCtx((prev) => ({
+        ...prev,
+        state: updatedAdaptiveState,
+      }));
+
+      // Check if adaptive safety stop triggered (3 consecutive errors or 10 min cap)
+      if (updatedAdaptiveState.isTerminated) {
+        setTimeout(() => {
+          setScreenMode("break");
+        }, 1200);
+        return;
+      }
+
       if (isMatch) {
-        // Dignified feedback (no patronising praise)
         setFeedback(t("feedbackRight"));
         const newMatched = [...matchedKeys, firstCard.pairKey];
         setMatchedKeys(newMatched);
         setFlippedIndices([]);
+        setHintMessage("");
         turnStartTimeRef.current = Date.now();
 
-        // Check if all pairs are matched
         if (newMatched.length === cards.length / 2) {
           setTimeout(() => {
-            setGameState("completed");
+            setScreenMode("completed");
           }, 1000);
         }
       } else {
-        // Courteous non-blaming feedback
         setFeedback(t("feedbackHere"));
         setTimeout(() => {
           setFlippedIndices([]);
           setFeedback("");
           turnStartTimeRef.current = Date.now();
-        }, 1200);
+        }, 1400);
       }
     }
   };
 
   return (
     <div className="flex-1 flex flex-col justify-between max-w-lg mx-auto w-full py-4 space-y-6">
-      {/* Top Navigation & Orientation Banner */}
+      {/* Top Banner */}
       <div className="flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-lg font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl no-underline"
+          className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl no-underline"
           style={{ minHeight: "48px" }}
         >
           <span aria-hidden="true">⬅️</span>
@@ -144,8 +212,8 @@ export default function PatientPlayPage() {
         </span>
       </div>
 
-      {/* STATE 1: HOME */}
-      {gameState === "home" && (
+      {/* 1. HOME SCREEN */}
+      {screenMode === "home" && (
         <>
           <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] shadow-sm text-center space-y-4">
             <div className="w-20 h-20 mx-auto rounded-full bg-[#F8F6F0] flex items-center justify-center text-4xl border-2 border-[#1B3B36]" aria-hidden="true">
@@ -164,26 +232,26 @@ export default function PatientPlayPage() {
               label={t("startSession")}
               icon="▶️"
               variant="primary"
-              onClick={handleStartGame}
+              onClick={handleStartSession}
               aria-label={t("startSession")}
             />
           </div>
         </>
       )}
 
-      {/* STATE 2: PLAYING MEMORY MATCH */}
-      {gameState === "playing" && (
+      {/* 2. PLAYING ADAPTIVE MATCH */}
+      {screenMode === "playing" && (
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-xl md:text-2xl font-bold text-[#1B3B36]">
               {t("matchGameTitle")}
             </h2>
             <p className="text-base text-[#52504C] mt-1" role="status" aria-live="polite">
-              {feedback || t("matchGamePrompt")}
+              {feedback || hintMessage || t("matchGamePrompt")}
             </p>
           </div>
 
-          {/* Cards Grid: Minimum 72px touch target with visible text labels */}
+          {/* Cards Grid */}
           <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
             {cards.map((card, idx) => {
               const isFlipped = flippedIndices.includes(idx) || matchedKeys.includes(card.pairKey);
@@ -203,21 +271,15 @@ export default function PatientPlayPage() {
                       : "bg-[#1B3B36] border-[#1B3B36] text-white hover:bg-[#122824]"
                   }`}
                   style={{ minHeight: "72px", minWidth: "72px" }}
-                  aria-label={isFlipped ? card.name : `Hidden card ${idx + 1}`}
+                  aria-label={isFlipped ? card.name : `Card ${idx + 1}`}
                 >
                   {isFlipped ? (
                     <>
-                      <span className="text-4xl mb-1" aria-hidden="true">
-                        {card.icon}
-                      </span>
-                      <span className="text-sm font-bold tracking-tight">
-                        {card.name}
-                      </span>
+                      <span className="text-4xl mb-1" aria-hidden="true">{card.icon}</span>
+                      <span className="text-sm font-bold tracking-tight">{card.name}</span>
                     </>
                   ) : (
-                    <span className="text-3xl opacity-80" aria-hidden="true">
-                      🌿
-                    </span>
+                    <span className="text-3xl opacity-80" aria-hidden="true">🌿</span>
                   )}
                 </button>
               );
@@ -227,7 +289,7 @@ export default function PatientPlayPage() {
           <div className="pt-2 text-center">
             <button
               type="button"
-              onClick={() => setGameState("home")}
+              onClick={() => setScreenMode("break")}
               className="text-base text-[#52504C] underline hover:text-[#1C1C1A] py-2 px-4"
               style={{ minHeight: "44px" }}
             >
@@ -237,24 +299,66 @@ export default function PatientPlayPage() {
         </div>
       )}
 
-      {/* STATE 3: COMPLETED */}
-      {gameState === "completed" && (
+      {/* 3. CALM BREAK & ORIENTATION CARD */}
+      {screenMode === "break" && (
+        <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] shadow-sm space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-16 h-16 mx-auto rounded-full bg-[#F8F6F0] flex items-center justify-center text-3xl border-2 border-[#1B3B36]" aria-hidden="true">
+              ☕
+            </div>
+            <h2 className="text-2xl font-bold text-[#1B3B36]">{t("calmBreak")}</h2>
+            <p className="text-sm text-[#52504C]">{t("takeRest")}</p>
+          </div>
+
+          {/* Orientation Card Details */}
+          <div className="space-y-3 bg-[#F8F6F0] p-4 rounded-2xl border border-[#D1CEC4]">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">📅</span>
+              <div>
+                <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">{t("todayIs")}</span>
+                <span className="text-base font-bold text-[#1C1C1A]">{orientationData.todayDateFormatted}</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">💊</span>
+              <div>
+                <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">{t("medicineReminder")}</span>
+                <span className="text-base font-medium text-[#1C1C1A]">{orientationData.nextMedicineText}</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">🏡</span>
+              <div>
+                <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">{t("whoIsHome")}</span>
+                <span className="text-base font-medium text-[#1C1C1A]">{orientationData.whoIsHomeText}</span>
+              </div>
+            </div>
+          </div>
+
+          <BigButton
+            label={tCommon("continue")}
+            variant="primary"
+            onClick={() => setScreenMode("home")}
+          />
+        </div>
+      )}
+
+      {/* 4. COMPLETED SESSION */}
+      {screenMode === "completed" && (
         <div className="bg-white rounded-3xl p-6 border-3 border-[#2D6A4F] shadow-sm text-center space-y-6">
           <div className="w-20 h-20 mx-auto rounded-full bg-[#EAF3EE] flex items-center justify-center text-4xl border-2 border-[#2D6A4F]" aria-hidden="true">
             🌱
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-[#2D6A4F]">
-              {t("feedbackRight")}
-            </h2>
-            <p className="text-base text-[#52504C] mt-2">
-              {t("takeRest")}
-            </p>
+            <h2 className="text-2xl font-bold text-[#2D6A4F]">{t("feedbackRight")}</h2>
+            <p className="text-base text-[#52504C] mt-2">{t("takeRest")}</p>
           </div>
           <BigButton
             label={tCommon("continue")}
             variant="primary"
-            onClick={() => setGameState("home")}
+            onClick={() => setScreenMode("break")}
           />
         </div>
       )}
