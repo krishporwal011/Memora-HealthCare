@@ -76,12 +76,13 @@ docker compose up --build
 12. **One agent, one branch, one brief.** Plan before build for anything touching more than 2 files. Every task ends with an AGENT REPORT. Humans merge, agents never do.
 
 ## 8. Current state (update every session)
-- Phase: **Phase 2 in progress (Patient Core: B06, B07, B08 complete and merged). Next: B09 (A2 Offline sync client).**
+- Phase: **Phase 1 (Foundation: B01-B05), Phase 2 (Patient Core: B06-B09), and Phase 3 (Caregiver & Memories: B10-B13) all complete and merged.**
 - Done:
-  - P1 Foundation (B01 PWA plan, B02 Frontend scaffold + tokens + Dexie + locales, B03 FastAPI auth + RLS + consent gating + idempotent events, B04 Anomaly detection + Monte Carlo simulation + synthetic evidence, B05 Playwright E2E + axe a11y + CI).
-  - P2 Patient Core: B06 (A2 Patient home + Memory Match game with NER cultural themes), B07 (A2 Session flow + adaptive stop rules + orientation card), B08 (A1 Backend sync + ability recalculation + ability history endpoint).
-  - All 28 tests green (12 Vitest, 16 Pytest).
-- Next: B09 (A2 Frontend sync client: batch up to 200, delete only acked, retry with backoff, offline status text) -> Phase 3 (Caregiver & Memories: B10-B13).
+  - P1 Foundation: B01 (PWA plan), B02 (Frontend scaffold + tokens + Dexie + locales), B03 (FastAPI auth + RLS + consent gating + idempotent events), B04 (Anomaly detection + Monte Carlo simulation + synthetic evidence), B05 (Playwright E2E + axe a11y + CI).
+  - P2 Patient Core: B06 (Patient home + Memory Match game with NER cultural pairs), B07 (Adaptive session flow + 3-consecutive-error stop rules + orientation card), B08 (Backend sync + ability recalculation + ability history endpoint), B09 (Offline sync client with batching up to 200, strict ack deletion, backoff, and reconnect auto-sync).
+  - P3 Caregiver & Memories: B10 (Onboarding API with capacity question, guardian note, consent versioning & consent gating), B11 (Caregiver onboarding UI with 6-step flow, 200% text zoom, and lawyer review pending flag), B12 (Private memories storage API with signed URLs, RLS isolation, and cascading file & embedding deletion), B13 (Caregiver memories upload UI with photos/songs/stories, required caption, offline progress, and approval toggles).
+  - All 39 automated tests green (17 Vitest, 22 Pytest).
+- Next: Phase 4 (ASHA & Clinician Triage: B14-B17).
 - Research status: R1 [x] R2 [ ] R3 [x] R4 [x] R5 [ ] R6 [ ] R7 [x] R8 [ ] R9 [ ] R10 [ ]  (tick when the note exists in docs/research/)
 - Known gaps: native-speaker review of Assamese/Hindi strings; Bhashini credentials not yet obtained; ASR coverage per NER language unverified; legal/clinical wording not yet reviewed by a lawyer/clinician.
 
@@ -101,6 +102,9 @@ docker compose up --build
 | 2026-10 | Strict consent gating: 403 on writes without active consent | Enforces DPDP Act 2023 compliance at database and API layers |
 | 2026-10 | Strict acking: acknowledge only persisted event IDs | Prevents client queue from purging unpersisted or foreign events |
 | 2026-10 | Continuous ability answers count tracking | Preserves decaying learning rate K across sequential batch syncs |
+| 2026-10 | Plain-language consent with lawyer review pending badge | Ensures ethical transparency and compliance with DPDP 2023 guidelines |
+| 2026-10 | Private storage bucket with time-limited signed URLs | Safeguards family photos and voice stories from unauthorized public access |
+| 2026-10 | Cascading media and embedding deletion | Guarantees right to erasure under DPDP Act 2023 |
 
 ## 10. Glossary
 ASHA: Accredited Social Health Activist. ANM: Auxiliary Nurse Midwife. PHC: Primary Health Centre. NER: North Eastern Region. RLS: Row Level Security. Reminiscence: activities using a person's own past (photos, songs). θ (theta): patient ability. b: item difficulty.
