@@ -42,6 +42,9 @@ CREATE TABLE IF NOT EXISTS consents (
     granted_by_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     guardian_name TEXT NOT NULL,
     guardian_relationship TEXT NOT NULL,
+    guardian_note TEXT,
+    capacity_assessed BOOLEAN NOT NULL DEFAULT TRUE,
+    capacity_notes TEXT,
     consent_version TEXT NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     granted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

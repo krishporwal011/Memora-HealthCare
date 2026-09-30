@@ -85,6 +85,9 @@ class MemoryDatabase:
         guardian_name: str,
         guardian_relationship: str,
         consent_version: str,
+        guardian_note: Optional[str] = None,
+        capacity_assessed: bool = True,
+        capacity_notes: Optional[str] = None,
     ) -> Dict[str, Any]:
         # User must be an assigned member to grant consent
         if not self.is_member(patient_id, user_id):
@@ -99,12 +102,51 @@ class MemoryDatabase:
             "granted_by_user_id": user_id,
             "guardian_name": guardian_name,
             "guardian_relationship": guardian_relationship,
+            "guardian_note": guardian_note,
+            "capacity_assessed": capacity_assessed,
+            "capacity_notes": capacity_notes,
             "consent_version": consent_version,
             "is_active": True,
             "granted_at": datetime.now(timezone.utc).isoformat(),
         }
         self.consents.append(consent_record)
         return consent_record
+
+    def onboard_patient(self, user_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Atomically create patient and record verifiable guardian consent under DPDP Act 2023."""
+        patient = self.create_patient(
+            user_id=user_id,
+            full_name=data["full_name"],
+            preferred_language=data.get("preferred_language", "as"),
+            initial_theta=data.get("initial_theta", 0.0),
+        )
+
+        consent = self.record_consent(
+            user_id=user_id,
+            patient_id=patient["id"],
+            guardian_name=data["guardian_name"],
+            guardian_relationship=data["guardian_relationship"],
+            guardian_note=data.get("guardian_note"),
+            capacity_assessed=data.get("lacks_capacity", True),
+            capacity_notes=data.get("capacity_notes"),
+            consent_version=data["consent_version"],
+        )
+
+        return {
+            "patient": patient,
+            "consent": consent,
+        }
+
+    def get_patient_consent(self, patient_id: str, user_id: str) -> Optional[Dict[str, Any]]:
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to access this patient",
+            )
+        for c in reversed(self.consents):
+            if c["patient_id"] == patient_id and c["is_active"]:
+                return c
+        return None
 
     def ingest_batch_events(
         self, user_id: str, patient_id: str, events: List[Dict[str, Any]]
@@ -196,6 +238,12 @@ class MemoryDatabase:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to access this patient",
+            )
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Patient data is unavailable before consent is granted",
             )
 
         return [
