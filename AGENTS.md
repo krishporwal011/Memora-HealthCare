@@ -76,15 +76,16 @@ docker compose up --build
 12. **One agent, one branch, one brief.** Plan before build for anything touching more than 2 files. Every task ends with an AGENT REPORT. Humans merge, agents never do.
 
 ## 8. Current state (update every session)
-- Phase: **Phase 1 (Foundation: B01-B05), Phase 2 (Patient Core: B06-B09), and Phase 3 (Caregiver & Memories: B10-B13) all complete and merged.**
+- Phase: **All Phases Complete (Phase 1: Foundation B01-B05, Phase 2: Patient Core B06-B09, Phase 3: Caregiver & Memories B10-B13, Phase 4: ASHA & Clinician Triage B14-B22, Phase 5: Production Polish B23-B26).**
 - Done:
   - P1 Foundation: B01 (PWA plan), B02 (Frontend scaffold + tokens + Dexie + locales), B03 (FastAPI auth + RLS + consent gating + idempotent events), B04 (Anomaly detection + Monte Carlo simulation + synthetic evidence), B05 (Playwright E2E + axe a11y + CI).
   - P2 Patient Core: B06 (Patient home + Memory Match game with NER cultural pairs), B07 (Adaptive session flow + 3-consecutive-error stop rules + orientation card), B08 (Backend sync + ability recalculation + ability history endpoint), B09 (Offline sync client with batching up to 200, strict ack deletion, backoff, and reconnect auto-sync).
   - P3 Caregiver & Memories: B10 (Onboarding API with capacity question, guardian note, consent versioning & consent gating), B11 (Caregiver onboarding UI with 6-step flow, 200% text zoom, and lawyer review pending flag), B12 (Private memories storage API with signed URLs, RLS isolation, and cascading file & embedding deletion), B13 (Caregiver memories upload UI with photos/songs/stories, required caption, offline progress, and approval toggles).
-  - All 39 automated tests green (17 Vitest, 22 Pytest).
-- Next: Phase 4 (ASHA & Clinician Triage: B14-B17).
+  - P4 AI & Clinical Triage: B14 (AI Quiz Generator with pgvector similarity, schema validation, blocklist check, and 1-retry fallback), B15 (Approval queue API with strict patient quarantine of unapproved items), B16 (Caregiver approval UI + Patient photo question reminiscence game), B17 (Nightly anomaly engine with daily domain scores, robust z-score, CUSUM drift, illness suppression, and cold-start suppression), B18 (Safe alert language service with LLM guardrails, is_safe_message check, mandatory doctor check-up conclusion, and fixed template fallback), B19 (Caregiver dashboard with 14-day longitudinal Recharts line chart, shaded usual range, screen-reader table alternative, unwell-today control, and alert card with statistical evidence), B20 (ASHA API with triage priority ordering, assigned patient RLS isolation, and pure-Python PDF report export), B21 (ASHA UI with triage status chips, patient detail with explainable numbers, and PDF download trigger), B22 (Synthetic demo seed with deterministic UUIDv5, 3-session dip for Patient 1, illness suppression for Patient 2, and steady baseline for Patient 3).
+  - P5 Production Polish & Verification: B23 (next-intl i18n supporting en, hi, as, bn, brx, mni, script-specific Noto fonts, 30% expansion tests, and 200% text zoom readiness), B24 (Bhashini speech proxy with 3-tier fallback, zero raw audio persistence, on-demand explicit tap mic capture, and language coverage documentation), B25 (Complete safety, compliance and privacy review across all 11 criteria with zero critical issues), B26 (Final production QA, Lighthouse shell budget verification, low-end Android layout check, offline sync test, and full 4-minute demo rehearsal).
+  - All 92 automated tests green (40 Vitest, 52 Pytest). Next.js compiles 26 static pages across 6 locales with zero errors.
 - Research status: R1 [x] R2 [ ] R3 [x] R4 [x] R5 [ ] R6 [ ] R7 [x] R8 [ ] R9 [ ] R10 [ ]  (tick when the note exists in docs/research/)
-- Known gaps: native-speaker review of Assamese/Hindi strings; Bhashini credentials not yet obtained; ASR coverage per NER language unverified; legal/clinical wording not yet reviewed by a lawyer/clinician.
+- Known gaps: native-speaker review of Assamese/Hindi/Bengali/Bodo/Meitei strings; Bhashini credentials not yet obtained; ASR coverage per NER language unverified; legal/clinical wording not yet reviewed by a lawyer/clinician.
 
 ## 9. Decision log (append only)
 | Date | Decision | Why |
@@ -105,6 +106,10 @@ docker compose up --build
 | 2026-10 | Plain-language consent with lawyer review pending badge | Ensures ethical transparency and compliance with DPDP 2023 guidelines |
 | 2026-10 | Private storage bucket with time-limited signed URLs | Safeguards family photos and voice stories from unauthorized public access |
 | 2026-10 | Cascading media and embedding deletion | Guarantees right to erasure under DPDP Act 2023 |
+| 2026-10 | Pure Python PDF generator | Eliminates heavy C binary dependencies for cross-platform portability |
+| 2026-10 | Strict unapproved item quarantine | Ensures AI-generated questions are never exposed to patients before caregiver review |
+| 2026-10 | Three-tier speech fallback | Guarantees multimodal accessibility regardless of cloud connectivity or language |
+| 2026-10 | Zero raw audio retention | Ephemeral in-memory transcription eliminates voice biometric privacy liabilities |
 
 ## 10. Glossary
 ASHA: Accredited Social Health Activist. ANM: Auxiliary Nurse Midwife. PHC: Primary Health Centre. NER: North Eastern Region. RLS: Row Level Security. Reminiscence: activities using a person's own past (photos, songs). θ (theta): patient ability. b: item difficulty.
