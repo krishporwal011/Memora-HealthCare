@@ -18,6 +18,9 @@ class MemoryDatabase:
         self.consents: List[Dict[str, Any]] = []
         self.game_events: Dict[str, Dict[str, Any]] = {}
         self.ability_scores: List[Dict[str, Any]] = []
+        self.memories: Dict[str, Dict[str, Any]] = {}
+        self.embeddings: Dict[str, List[float]] = {}
+        self.storage_files: Dict[str, bytes] = {}
 
     def is_member(self, patient_id: str, user_id: str) -> bool:
         """RLS check: Verify user is an authorized member of patient."""
@@ -250,6 +253,137 @@ class MemoryDatabase:
             score for score in self.ability_scores
             if score["patient_id"] == patient_id
         ]
+
+    def _generate_signed_url(self, storage_path: str, memory_id: str) -> str:
+        """Generate a time-limited signed URL for private bucket access."""
+        return f"https://supabase.co/storage/v1/object/sign/memora-private-memories/{storage_path}?token=signed-{memory_id[:8]}"
+
+    def create_memory(
+        self,
+        user_id: str,
+        patient_id: str,
+        memory_type: str,
+        caption: str,
+        people: Optional[List[str]] = None,
+        year: Optional[int] = None,
+        file_path: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Upload private memory metadata and media asset (consent-gated, RLS)."""
+        if patient_id not in self.patients:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to add memories for this patient")
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required before uploading memories")
+
+        if memory_type not in ("photo", "song", "story"):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid memory_type. Must be photo, song, or story.")
+
+        memory_id = str(uuid.uuid4())
+        embedding_id = str(uuid.uuid4())
+        resolved_path = file_path or f"{patient_id}/{memory_type}s/{memory_id}.dat"
+
+        # 1. Store mock media in private storage bucket
+        self.storage_files[resolved_path] = b"MOCK_ENCRYPTED_MEDIA_BINARY"
+
+        # 2. Store vector embedding in pgvector repository
+        self.embeddings[embedding_id] = [0.05] * 384
+
+        record = {
+            "id": memory_id,
+            "patient_id": patient_id,
+            "created_by_user_id": user_id,
+            "memory_type": memory_type,
+            "caption": caption,
+            "people": people or [],
+            "year": year,
+            "storage_bucket": "memora-private-memories",
+            "storage_path": resolved_path,
+            "signed_url": self._generate_signed_url(resolved_path, memory_id),
+            "embedding_id": embedding_id,
+            "is_approved": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+        self.memories[memory_id] = record
+        return record
+
+    def list_memories(
+        self, user_id: str, patient_id: str, memory_type: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """List private memories for a patient (only authorized members with consent)."""
+        if patient_id not in self.patients:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view memories for this patient")
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required before viewing memories")
+
+        results = []
+        for mem in self.memories.values():
+            if mem["patient_id"] == patient_id:
+                if memory_type and mem["memory_type"] != memory_type:
+                    continue
+                # Refresh signed URL
+                results.append({
+                    **mem,
+                    "signed_url": self._generate_signed_url(mem["storage_path"], mem["id"]),
+                })
+        return results
+
+    def get_memory(self, memory_id: str, user_id: str) -> Dict[str, Any]:
+        """Retrieve a single memory with a refreshed signed URL."""
+        memory = self.memories.get(memory_id)
+        if not memory:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Memory not found")
+
+        if not self.is_member(memory["patient_id"], user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this memory")
+
+        if not self.has_consent(memory["patient_id"]):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required before accessing memory")
+
+        return {
+            **memory,
+            "signed_url": self._generate_signed_url(memory["storage_path"], memory["id"]),
+        }
+
+    def delete_memory(self, memory_id: str, user_id: str) -> Dict[str, Any]:
+        """Delete memory metadata, private storage file, and vector embedding."""
+        memory = self.memories.get(memory_id)
+        if not memory:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Memory not found")
+
+        if not self.is_member(memory["patient_id"], user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this memory")
+
+        # 1. Remove file from private storage bucket
+        storage_path = memory.get("storage_path")
+        file_deleted = False
+        if storage_path in self.storage_files:
+            del self.storage_files[storage_path]
+            file_deleted = True
+
+        # 2. Cleanup vector embedding
+        embedding_id = memory.get("embedding_id")
+        embedding_deleted = False
+        if embedding_id in self.embeddings:
+            del self.embeddings[embedding_id]
+            embedding_deleted = True
+
+        # 3. Delete memory record
+        del self.memories[memory_id]
+
+        return {
+            "status": "deleted",
+            "id": memory_id,
+            "file_deleted": file_deleted,
+            "embedding_deleted": embedding_deleted,
+        }
 
 
 # Global repository instance

@@ -170,6 +170,116 @@ paths:
         '403':
           description: Consent required before writing patient activity data
 
+  /v1/patients/{patient_id}/memories:
+    get:
+      summary: List private memories for an elder (authorized members only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [photo, song, story]
+      responses:
+        '200':
+          description: List of memories with time-limited signed URLs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Memory'
+        '403':
+          description: Not authorized or consent missing
+        '404':
+          description: Patient not found
+    post:
+      summary: Upload a new private memory (photo, song, or story)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoryCreate'
+      responses:
+        '201':
+          description: Memory saved with signed URL and vector embedding
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memory'
+        '403':
+          description: Not authorized or consent missing
+
+  /v1/memories/{memory_id}:
+    get:
+      summary: Retrieve a single memory with a fresh signed URL
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: memory_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Memory details with signed URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memory'
+        '403':
+          description: Not authorized
+        '404':
+          description: Memory not found
+    delete:
+      summary: Permanently delete a memory, its private storage file, and vector embedding
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: memory_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Memory, storage asset, and embedding permanently deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: deleted
+                  id:
+                    type: string
+                  file_deleted:
+                    type: boolean
+                  embedding_deleted:
+                    type: boolean
+        '403':
+          description: Not authorized
+        '404':
+          description: Memory not found
+
 components:
   securitySchemes:
     BearerAuth:
@@ -431,5 +541,75 @@ components:
           format: float
           example: 0.32
         recorded_at:
+          type: string
+          format: date-time
+
+    MemoryCreate:
+      type: object
+      required:
+        - memory_type
+        - caption
+      properties:
+        memory_type:
+          type: string
+          enum: [photo, song, story]
+          example: photo
+        caption:
+          type: string
+          example: Rongali Bihu festival at ancestral home
+        people:
+          type: array
+          items:
+            type: string
+          example: ["Grandmother", "Ranjit"]
+        year:
+          type: integer
+          example: 1985
+        file_path:
+          type: string
+          example: photos/bihu_1985.jpg
+
+    Memory:
+      type: object
+      required:
+        - id
+        - patient_id
+        - memory_type
+        - caption
+        - storage_path
+        - signed_url
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        memory_type:
+          type: string
+          enum: [photo, song, story]
+        caption:
+          type: string
+        people:
+          type: array
+          items:
+            type: string
+        year:
+          type: integer
+        storage_bucket:
+          type: string
+          example: memora-private-memories
+        storage_path:
+          type: string
+        signed_url:
+          type: string
+          description: Time-limited signed URL for private bucket access
+        embedding_id:
+          type: string
+          format: uuid
+        is_approved:
+          type: boolean
+        created_at:
           type: string
           format: date-time
