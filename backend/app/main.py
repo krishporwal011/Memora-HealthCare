@@ -67,6 +67,28 @@ class AbilityScore(BaseModel):
     theta: float
     recorded_at: str
 
+class MemoryCreate(BaseModel):
+    memory_type: str  # photo | song | story
+    caption: str
+    people: Optional[List[str]] = []
+    year: Optional[int] = None
+    file_path: Optional[str] = None
+
+class Memory(BaseModel):
+    id: str
+    patient_id: str
+    created_by_user_id: str
+    memory_type: str
+    caption: str
+    people: List[str]
+    year: Optional[int]
+    storage_bucket: str
+    storage_path: str
+    signed_url: str
+    embedding_id: Optional[str] = None
+    is_approved: bool
+    created_at: str
+
 @app.get("/v1/health")
 def health_check():
     return {"status": "ok", "version": "1.0.0"}
@@ -123,3 +145,41 @@ def ingest_events_batch(body: BatchEventsRequest, user: AuthUser = Depends(get_c
         patient_id=body.patient_id,
         events=[ev.model_dump() for ev in body.events],
     )
+
+@app.get("/v1/patients/{patient_id}/memories", response_model=List[Memory])
+def list_patient_memories(
+    patient_id: str,
+    type: Optional[str] = None,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.list_memories(user_id=user.user_id, patient_id=patient_id, memory_type=type)
+
+@app.post("/v1/patients/{patient_id}/memories", response_model=Memory, status_code=status.HTTP_201_CREATED)
+def create_patient_memory(
+    patient_id: str,
+    body: MemoryCreate,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.create_memory(
+        user_id=user.user_id,
+        patient_id=patient_id,
+        memory_type=body.memory_type,
+        caption=body.caption,
+        people=body.people,
+        year=body.year,
+        file_path=body.file_path,
+    )
+
+@app.get("/v1/memories/{memory_id}", response_model=Memory)
+def get_memory_details(
+    memory_id: str,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.get_memory(memory_id=memory_id, user_id=user.user_id)
+
+@app.delete("/v1/memories/{memory_id}")
+def delete_memory(
+    memory_id: str,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.delete_memory(memory_id=memory_id, user_id=user.user_id)
