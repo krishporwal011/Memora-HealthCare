@@ -89,6 +89,26 @@ class Memory(BaseModel):
     is_approved: bool
     created_at: str
 
+class QuizOptionModel(BaseModel):
+    id: str
+    text: str
+    is_correct: bool
+
+class GeneratedQuizItemModel(BaseModel):
+    id: str
+    patient_id: str
+    memory_id: str
+    question_text: str
+    options: List[QuizOptionModel]
+    difficulty: float = 0.0
+    domain: str = "reminiscence"
+    image_url: Optional[str] = None
+    approval_status: str = "pending"
+    is_approved: bool = False
+    reviewed_by_user_id: Optional[str] = None
+    reviewed_at: Optional[str] = None
+    created_at: Optional[str] = None
+
 @app.get("/v1/health")
 def health_check():
     return {"status": "ok", "version": "1.0.0"}
@@ -183,3 +203,32 @@ def delete_memory(
     user: AuthUser = Depends(get_current_user),
 ):
     return db.delete_memory(memory_id=memory_id, user_id=user.user_id)
+
+@app.get("/v1/patients/{patient_id}/approval-queue", response_model=List[GeneratedQuizItemModel])
+def get_approval_queue(
+    patient_id: str,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.get_approval_queue(patient_id=patient_id, user_id=user.user_id)
+
+@app.post("/v1/quiz-items/{item_id}/approve", response_model=GeneratedQuizItemModel)
+def approve_quiz_item(
+    item_id: str,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.approve_quiz_item(item_id=item_id, user_id=user.user_id)
+
+@app.post("/v1/quiz-items/{item_id}/reject", response_model=GeneratedQuizItemModel)
+def reject_quiz_item(
+    item_id: str,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.reject_quiz_item(item_id=item_id, user_id=user.user_id)
+
+@app.get("/v1/patients/{patient_id}/quiz-items", response_model=List[GeneratedQuizItemModel])
+def list_patient_quiz_items(
+    patient_id: str,
+    user: AuthUser = Depends(get_current_user),
+):
+    return db.list_approved_quiz_items_for_patient(patient_id=patient_id, user_id=user.user_id)
+

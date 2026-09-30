@@ -280,6 +280,98 @@ paths:
         '404':
           description: Memory not found
 
+  /v1/patients/{patient_id}/approval-queue:
+    get:
+      summary: Retrieve pending AI-generated quiz questions awaiting caregiver review
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of pending quiz questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeneratedQuizItem'
+        '403':
+          description: Not authorized or consent missing
+
+  /v1/quiz-items/{item_id}/approve:
+    post:
+      summary: Approve an AI-generated quiz question for patient activity sessions
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Question approved and unlocked for patient play
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratedQuizItem'
+        '403':
+          description: Not authorized
+        '404':
+          description: Quiz item not found
+
+  /v1/quiz-items/{item_id}/reject:
+    post:
+      summary: Reject an AI-generated quiz question (guaranteed never to be served to patient)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Question rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratedQuizItem'
+        '403':
+          description: Not authorized
+        '404':
+          description: Quiz item not found
+
+  /v1/patients/{patient_id}/quiz-items:
+    get:
+      summary: Retrieve approved quiz items for patient sessions and offline sync (strictly excludes unapproved)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of approved quiz items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeneratedQuizItem'
+        '403':
+          description: Not authorized or consent missing
+
 components:
   securitySchemes:
     BearerAuth:
@@ -613,3 +705,61 @@ components:
         created_at:
           type: string
           format: date-time
+
+    QuizOption:
+      type: object
+      required:
+        - id
+        - text
+        - is_correct
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        is_correct:
+          type: boolean
+
+    GeneratedQuizItem:
+      type: object
+      required:
+        - id
+        - patient_id
+        - memory_id
+        - question_text
+        - options
+        - difficulty
+        - domain
+        - approval_status
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        memory_id:
+          type: string
+          format: uuid
+        question_text:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizOption'
+        difficulty:
+          type: number
+          format: float
+          example: 0.0
+        domain:
+          type: string
+          example: reminiscence
+        image_url:
+          type: string
+        approval_status:
+          type: string
+          enum: [pending, approved, rejected]
+          example: pending
+        is_approved:
+          type: boolean
+          example: false

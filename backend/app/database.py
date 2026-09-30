@@ -21,6 +21,20 @@ class MemoryDatabase:
         self.memories: Dict[str, Dict[str, Any]] = {}
         self.embeddings: Dict[str, List[float]] = {}
         self.storage_files: Dict[str, bytes] = {}
+        self.quiz_items: Dict[str, Dict[str, Any]] = {}
+
+    def clear(self):
+        """Reset all in-memory tables and stores."""
+        self.profiles.clear()
+        self.patients.clear()
+        self.patient_members.clear()
+        self.consents.clear()
+        self.game_events.clear()
+        self.ability_scores.clear()
+        self.memories.clear()
+        self.embeddings.clear()
+        self.storage_files.clear()
+        self.quiz_items.clear()
 
     def is_member(self, patient_id: str, user_id: str) -> bool:
         """RLS check: Verify user is an authorized member of patient."""
@@ -375,7 +389,15 @@ class MemoryDatabase:
             del self.embeddings[embedding_id]
             embedding_deleted = True
 
-        # 3. Delete memory record
+        # 3. Cascading delete of quiz items generated from this memory
+        quiz_ids_to_delete = [
+            qid for qid, qitem in self.quiz_items.items()
+            if qitem.get("memory_id") == memory_id
+        ]
+        for qid in quiz_ids_to_delete:
+            del self.quiz_items[qid]
+
+        # 4. Delete memory record
         del self.memories[memory_id]
 
         return {
@@ -383,7 +405,93 @@ class MemoryDatabase:
             "id": memory_id,
             "file_deleted": file_deleted,
             "embedding_deleted": embedding_deleted,
+            "quiz_items_deleted": len(quiz_ids_to_delete),
         }
+
+    def add_quiz_item(self, item: Dict[str, Any]) -> Dict[str, Any]:
+        """Store generated quiz item with default pending approval status."""
+        item_id = item.get("id") or str(uuid.uuid4())
+        record = {
+            **item,
+            "id": item_id,
+            "approval_status": item.get("approval_status", "pending"),
+            "is_approved": item.get("is_approved", False),
+            "created_at": item.get("created_at") or datetime.now(timezone.utc).isoformat(),
+        }
+        self.quiz_items[item_id] = record
+        return record
+
+    def get_approval_queue(self, patient_id: str, user_id: str) -> List[Dict[str, Any]]:
+        """Retrieve pending quiz questions awaiting caregiver review (RLS + consent gated)."""
+        if patient_id not in self.patients:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this patient")
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required")
+
+        return [
+            item for item in self.quiz_items.values()
+            if item["patient_id"] == patient_id and item.get("approval_status") == "pending"
+        ]
+
+    def approve_quiz_item(self, item_id: str, user_id: str) -> Dict[str, Any]:
+        """Approve an AI-generated quiz question, making it available for patient play and offline sync."""
+        item = self.quiz_items.get(item_id)
+        if not item:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz item not found")
+
+        patient_id = item["patient_id"]
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to approve items for this patient")
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required")
+
+        item["approval_status"] = "approved"
+        item["is_approved"] = True
+        item["reviewed_by_user_id"] = user_id
+        item["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+        return item
+
+    def reject_quiz_item(self, item_id: str, user_id: str) -> Dict[str, Any]:
+        """Reject an AI-generated quiz question. Unapproved items must NEVER be served to patients."""
+        item = self.quiz_items.get(item_id)
+        if not item:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz item not found")
+
+        patient_id = item["patient_id"]
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to reject items for this patient")
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required")
+
+        item["approval_status"] = "rejected"
+        item["is_approved"] = False
+        item["reviewed_by_user_id"] = user_id
+        item["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+        return item
+
+    def list_approved_quiz_items_for_patient(self, patient_id: str, user_id: str) -> List[Dict[str, Any]]:
+        """List approved quiz items for patient sessions and offline sync.
+        Strict rule: Unapproved or rejected items must NEVER be served to patients.
+        """
+        if patient_id not in self.patients:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+
+        if not self.is_member(patient_id, user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this patient")
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required")
+
+        return [
+            item for item in self.quiz_items.values()
+            if item["patient_id"] == patient_id and item.get("approval_status") == "approved" and item.get("is_approved") is True
+        ]
 
 
 # Global repository instance

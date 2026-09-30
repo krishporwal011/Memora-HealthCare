@@ -189,3 +189,35 @@ CREATE POLICY "Members can insert patient memories with active consent"
 CREATE POLICY "Members can delete patient memories with active consent"
     ON memories FOR DELETE
     USING (is_member(patient_id) AND has_consent(patient_id));
+
+-- 7. QUIZ ITEMS (AI Generated from Approved Memories & Approval Queue)
+CREATE TABLE IF NOT EXISTS quiz_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    memory_id UUID NOT NULL REFERENCES memories(id) ON DELETE CASCADE,
+    question_text TEXT NOT NULL,
+    options JSONB NOT NULL,
+    difficulty DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    domain TEXT NOT NULL DEFAULT 'reminiscence',
+    image_url TEXT,
+    approval_status TEXT NOT NULL DEFAULT 'pending' CHECK (approval_status IN ('pending', 'approved', 'rejected')),
+    is_approved BOOLEAN NOT NULL DEFAULT FALSE,
+    reviewed_by_user_id UUID REFERENCES profiles(id),
+    reviewed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+ALTER TABLE quiz_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Members can view patient quiz items with active consent"
+    ON quiz_items FOR SELECT
+    USING (is_member(patient_id) AND has_consent(patient_id));
+
+CREATE POLICY "Members can update quiz item approval status"
+    ON quiz_items FOR UPDATE
+    USING (is_member(patient_id) AND has_consent(patient_id));
+
+CREATE POLICY "Members can insert quiz items with active consent"
+    ON quiz_items FOR INSERT
+    WITH CHECK (is_member(patient_id) AND has_consent(patient_id));
+
