@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Depends, status, HTTPException
+from fastapi import FastAPI, Depends, status, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from app.auth import get_current_user, AuthUser
 from app.database import db
+from app.services.pdf_generator import generate_asha_pdf_report
 
 app = FastAPI(
     title="Memora Backend API",
@@ -108,6 +109,35 @@ class GeneratedQuizItemModel(BaseModel):
     reviewed_by_user_id: Optional[str] = None
     reviewed_at: Optional[str] = None
     created_at: Optional[str] = None
+
+class AshaPatientSummaryModel(BaseModel):
+    id: str
+    full_name: str
+    status: str
+    status_label: str
+    triage_priority: int
+    last_active: str
+    sessions_this_week: int
+    average_score: float
+    active_alert_domain: Optional[str] = None
+    unwell_today: bool = False
+    is_synthetic: bool = True
+
+class AshaPatientDetailModel(BaseModel):
+    id: str
+    full_name: str
+    preferred_language: str
+    status: str
+    status_label: str
+    triage_priority: int
+    unwell_today: bool = False
+    is_synthetic: bool = True
+    guardian_name: str
+    guardian_relationship: str
+    current_theta: float
+    recent_domains: List[Dict[str, Any]]
+    active_alerts: List[Dict[str, Any]]
+    created_at: str
 
 @app.get("/v1/health")
 def health_check():
@@ -231,4 +261,25 @@ def list_patient_quiz_items(
     user: AuthUser = Depends(get_current_user),
 ):
     return db.list_approved_quiz_items_for_patient(patient_id=patient_id, user_id=user.user_id)
+
+@app.get("/v1/asha/patients", response_model=List[AshaPatientSummaryModel])
+def list_asha_assigned_patients(user: AuthUser = Depends(get_current_user)):
+    return db.list_asha_patients(asha_user_id=user.user_id)
+
+@app.get("/v1/asha/patients/{patient_id}", response_model=AshaPatientDetailModel)
+def get_asha_assigned_patient(patient_id: str, user: AuthUser = Depends(get_current_user)):
+    return db.get_asha_patient_detail(patient_id=patient_id, asha_user_id=user.user_id)
+
+@app.get("/v1/asha/patients/{patient_id}/report.pdf")
+def export_asha_patient_pdf_report(patient_id: str, user: AuthUser = Depends(get_current_user)):
+    detail = db.get_asha_patient_detail(patient_id=patient_id, asha_user_id=user.user_id)
+    pdf_bytes = generate_asha_pdf_report(detail)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=memora-report-{patient_id[:8]}.pdf",
+        },
+    )
+
 

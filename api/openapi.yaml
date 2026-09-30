@@ -372,6 +372,71 @@ paths:
         '403':
           description: Not authorized or consent missing
 
+  /v1/asha/patients:
+    get:
+      summary: Retrieve patients assigned to the authenticated ASHA worker, ordered by triage priority
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of assigned patients ordered by triage need
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AshaPatientSummary'
+        '403':
+          description: Not authorized as ASHA or clinician
+
+  /v1/asha/patients/{patient_id}:
+    get:
+      summary: Retrieve patient details and anomaly evidence for assigned ASHA
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Patient triage details and longitudinal evidence
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AshaPatientDetail'
+        '403':
+          description: Patient not assigned to this ASHA worker
+        '404':
+          description: Patient not found
+
+  /v1/asha/patients/{patient_id}/report.pdf:
+    get:
+      summary: Generate server-side non-diagnostic clinical summary PDF report with evidence
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patient_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Generated PDF report binary
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '403':
+          description: Patient not assigned to this ASHA worker
+        '404':
+          description: Patient not found
+
+
 components:
   securitySchemes:
     BearerAuth:
@@ -763,3 +828,98 @@ components:
         is_approved:
           type: boolean
           example: false
+
+    AshaPatientSummary:
+      type: object
+      required:
+        - id
+        - full_name
+        - status
+        - status_label
+        - triage_priority
+        - unwell_today
+        - is_synthetic
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        status:
+          type: string
+          enum: [checkin_suggested, watch, steady]
+          example: checkin_suggested
+        status_label:
+          type: string
+          example: Check-in suggested
+        triage_priority:
+          type: integer
+          example: 1
+        last_active:
+          type: string
+        sessions_this_week:
+          type: integer
+          example: 5
+        average_score:
+          type: number
+          format: float
+          example: 0.78
+        active_alert_domain:
+          type: string
+        unwell_today:
+          type: boolean
+          example: false
+        is_synthetic:
+          type: boolean
+          example: true
+
+    AshaPatientDetail:
+      type: object
+      required:
+        - id
+        - full_name
+        - preferred_language
+        - status
+        - status_label
+        - triage_priority
+        - unwell_today
+        - is_synthetic
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        preferred_language:
+          type: string
+          example: as
+        status:
+          type: string
+          enum: [checkin_suggested, watch, steady]
+        status_label:
+          type: string
+        triage_priority:
+          type: integer
+        unwell_today:
+          type: boolean
+        is_synthetic:
+          type: boolean
+        guardian_name:
+          type: string
+        guardian_relationship:
+          type: string
+        current_theta:
+          type: number
+          format: float
+        recent_domains:
+          type: array
+          items:
+            type: object
+        active_alerts:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+

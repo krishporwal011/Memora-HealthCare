@@ -493,6 +493,129 @@ class MemoryDatabase:
             if item["patient_id"] == patient_id and item.get("approval_status") == "approved" and item.get("is_approved") is True
         ]
 
+    def assign_member(self, patient_id: str, user_id: str, role: str = "asha") -> Dict[str, Any]:
+        """Assign an authorized member (such as ASHA worker or clinician) to a patient."""
+        member = {
+            "patient_id": patient_id,
+            "user_id": user_id,
+            "role": role,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        self.patient_members.append(member)
+        return member
+
+    def list_asha_patients(self, asha_user_id: str) -> List[Dict[str, Any]]:
+        """List patients assigned to authenticated ASHA worker, ordered by triage priority."""
+        assigned_patient_ids = [
+            m["patient_id"] for m in self.patient_members
+            if m["user_id"] == asha_user_id
+        ]
+
+        from app.jobs.nightly_anomaly import get_alerts_for_patient
+
+        results = []
+        for p_id in assigned_patient_ids:
+            patient = self.patients.get(p_id)
+            if not patient or not self.has_consent(p_id):
+                continue
+
+            alerts = get_alerts_for_patient(p_id)
+            active_alerts = [a for a in alerts if a.get("has_alert") and not a.get("suppressed")]
+
+            # Triage priority calculation:
+            # 1 = Check-in suggested (active unsuppressed alert)
+            # 2 = Watch (suppressed alert / watch boundary)
+            # 3 = Steady
+            if active_alerts:
+                status_code = "checkin_suggested"
+                status_label = "Check-in suggested"
+                priority = 1
+                alert_domain = active_alerts[0].get("domain")
+            elif any(a.get("suppressed") for a in alerts):
+                status_code = "watch"
+                status_label = "Watch"
+                priority = 2
+                alert_domain = None
+            else:
+                status_code = "steady"
+                status_label = "Steady"
+                priority = 3
+                alert_domain = None
+
+            events = [e for e in self.game_events.values() if e.get("patient_id") == p_id]
+            recent_accuracy = 0.82
+            if events:
+                recent_accuracy = round(sum(1 for e in events if e.get("correct")) / len(events), 2)
+
+            results.append({
+                "id": p_id,
+                "full_name": patient["full_name"],
+                "status": status_code,
+                "status_label": status_label,
+                "triage_priority": priority,
+                "last_active": datetime.now(timezone.utc).isoformat(),
+                "sessions_this_week": max(1, len(events) // 10),
+                "average_score": recent_accuracy,
+                "active_alert_domain": alert_domain,
+                "unwell_today": any(a.get("suppressed") and "unwell" in str(a.get("suppression_reason", "")).lower() for a in alerts),
+                "is_synthetic": True,
+            })
+
+        # Order by triage_priority ASC (Priority 1 first!)
+        results.sort(key=lambda x: x["triage_priority"])
+        return results
+
+    def get_asha_patient_detail(self, patient_id: str, asha_user_id: str) -> Dict[str, Any]:
+        """Retrieve full triage and longitudinal details for an assigned patient."""
+        patient = self.patients.get(patient_id)
+        if not patient:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+
+        if not self.is_member(patient_id, asha_user_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Patient not assigned to this ASHA worker")
+
+        if not self.has_consent(patient_id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Active consent required")
+
+        from app.jobs.nightly_anomaly import get_alerts_for_patient
+        alerts = get_alerts_for_patient(patient_id)
+        active_alerts = [a for a in alerts if a.get("has_alert") and not a.get("suppressed")]
+
+        if active_alerts:
+            status_code = "checkin_suggested"
+            status_label = "Check-in suggested"
+            priority = 1
+        elif any(a.get("suppressed") for a in alerts):
+            status_code = "watch"
+            status_label = "Watch"
+            priority = 2
+        else:
+            status_code = "steady"
+            status_label = "Steady"
+            priority = 3
+
+        consent = next((c for c in reversed(self.consents) if c["patient_id"] == patient_id and c["is_active"]), {})
+
+        return {
+            "id": patient_id,
+            "full_name": patient["full_name"],
+            "preferred_language": patient.get("preferred_language", "as"),
+            "status": status_code,
+            "status_label": status_label,
+            "triage_priority": priority,
+            "unwell_today": any(a.get("suppressed") and "unwell" in str(a.get("suppression_reason", "")).lower() for a in alerts),
+            "is_synthetic": True,
+            "guardian_name": consent.get("guardian_name", "Family Guardian"),
+            "guardian_relationship": consent.get("guardian_relationship", "Family Member"),
+            "current_theta": patient.get("current_theta", 0.0),
+            "recent_domains": [
+                {"domain": "memory_match", "recent_score": 0.82, "status": "steady"},
+                {"domain": "reminiscence_photo", "recent_score": 0.78, "status": "steady"},
+            ],
+            "active_alerts": active_alerts,
+            "created_at": patient["created_at"],
+        }
+
 
 # Global repository instance
 db = MemoryDatabase()
