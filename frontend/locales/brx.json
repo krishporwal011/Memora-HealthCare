@@ -1,0 +1,55 @@
+{
+  "_note": "Machine-assisted translation. Requires native-speaker verification.",
+  "Common": {
+    "appName": "मेमोरा",
+    "offlineNotice": "अफलाइनाव खामानि मावदों। नोंथांनि हाबाफारिया बे डिभाइसाव रैखाथि गोनाङै दोनथुमबाय।",
+    "onlineNotice": "नेटवर्कजों फोनांजाबबाय।",
+    "back": "उनाव थां",
+    "next": "सिगां थां",
+    "continue": "सालायलांबाय था",
+    "cancel": "दानखार",
+    "confirm": "थियारि खालाम",
+    "disclaimer": "मेमोराया मोनसे गोसो थोजा खालामग्रा प्लेटफर्म, बेयो मुलि बा बेमार नायबिजिरग्रा जेबो नङा। फाहामथायनि थाखाय डाक्टरजों सावराय।"
+  },
+  "Roles": {
+    "selectRole": "नोंथांनि बिबान सायख'",
+    "patientTitle": "हाबाफारि गेले",
+    "patientSubtitle": "गोसोखां खेला, रोजाबनाय आरो सानफ्रोमबोनि सान्ति हाबाफारि",
+    "caregiverTitle": "सामलायग्रा पोर्टल",
+    "caregiverSubtitle": "नखरनि गोसोखांथि सोदेर आरो दावगानाय नाय",
+    "ashaTitle": "गामि सावस्रि मावथि (आशा)",
+    "ashaSubtitle": "बिबान गोनां बैसो गोरा सुबुं आरो हेफाजाब"
+  },
+  "Play": {
+    "title": "दिनैनि हाबाफारिफोर",
+    "startSession": "हाबाफारि जागाय",
+    "matchGameTitle": "जोड़ा मिलायनाय गेले",
+    "matchGamePrompt": "मिलायनाय कार्ड सायख'",
+    "calmBreak": "जिरायनायनि सम",
+    "todayIs": "दिनै जायो",
+    "medicineReminder": "मुलि लोंनायनि सम",
+    "whoIsHome": "दिनै नआव सोर दं",
+    "feedbackRight": "बेयो थार गेबें।",
+    "feedbackHere": "नैबेनो थार फिननाय।",
+    "takeRest": "मोजां गेलेबाय। दानिया जिरायथ'दो।"
+  },
+  "Care": {
+    "title": "सामलायग्रा देसबर्ड",
+    "todayStatus": "दिनैनि हाबाफारि",
+    "sessionsPlayed": "दिनै गेलेनाय हाबाफारि",
+    "trendTitle": "14 साननि हाबाफारि दावगानाय",
+    "usualRange": "सरासनस्रा सिमना",
+    "uploadMemory": "गोसोखांथि सोदेर",
+    "approvalQueue": "सोंनायनि थियारि",
+    "unwellToggle": "दिनै देहा गाज्रि होनना दिन्थि",
+    "unwellExplanation": "अन्दै समनि थाखाय हुसियार खालामनायखौ बन्द' लाखियो"
+  },
+  "Asha": {
+    "title": "आशा गामि सावस्रि गुसुं",
+    "assignedElders": "बिबान गोनां बैसो गोराफोर",
+    "checkinSuggested": "लोगो हमनो गोनां",
+    "watch": "नायबाय था",
+    "steady": "मोजां हाबाफारि",
+    "exportReport": "रिपर्ट डाउनलोड खालाम (PDF)"
+  }
+}

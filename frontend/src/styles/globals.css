@@ -54,3 +54,24 @@ html, body {
 .btn-patient:active {
   transform: scale(0.98);
 }
+
+/* Script-specific typography fallback */
+:lang(hi), :lang(brx) {
+  font-family: var(--font-family-devanagari);
+}
+
+:lang(as), :lang(bn) {
+  font-family: var(--font-family-bengali);
+}
+
+:lang(mni) {
+  font-family: var(--font-family-meetei);
+}
+
+/* Ensure no clipped text or truncated buttons on 200% zoom and longer translations */
+button, .btn-patient, a[role="button"] {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
