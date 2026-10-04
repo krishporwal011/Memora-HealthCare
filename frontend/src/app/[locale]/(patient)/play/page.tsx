@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { BigButton } from "@/components/patient/BigButton";
+import { DayHeader } from "@/components/patient/DayHeader";
+import { SyncStatusChip } from "@/components/common/SyncStatusChip";
 import { recordGameEventOffline, generateUUIDv7 } from "@/lib/offline";
 import {
   subscribeSyncState,
@@ -225,62 +227,63 @@ export default function PatientPlayPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between max-w-lg mx-auto w-full py-4 space-y-6">
-      {/* Top Banner */}
-      <div className="flex items-center justify-between">
+    <div
+      className="flex-1 flex flex-col gap-5 max-w-lg mx-auto w-full px-4 py-5"
+    >
+      {/* Day Header — always visible for orientation */}
+      <DayHeader locale={locale} />
+
+      {/* Top row: date chip + sync status */}
+      <div className="flex items-center justify-between gap-2">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl no-underline"
-          style={{ minHeight: "48px" }}
+          className="inline-flex items-center gap-2 text-base font-semibold p-2 rounded-xl no-underline transition-colors"
+          style={{ color: "var(--primary)", minHeight: "48px" }}
         >
-          <span aria-hidden="true">⬅️</span>
+          <span aria-hidden="true">←</span>
           <span>{tCommon("back")}</span>
         </Link>
-        <span className="text-sm font-semibold text-[#52504C] bg-white px-3 py-1.5 rounded-full border border-[#D1CEC4]">
-          {t("todayIs")}: {new Date().toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" })}
-        </span>
+        <SyncStatusChip />
       </div>
-
-      {/* Calm Offline / Sync Status Notice */}
-      {!syncState.isOnline ? (
-        <div
-          role="status"
-          aria-live="polite"
-          className="bg-[#FFF8E7] text-[#7A5800] border border-[#E0D0A0] px-4 py-3 rounded-2xl flex items-center gap-3 text-sm font-medium shadow-xs"
-        >
-          <span className="text-xl" aria-hidden="true">📡</span>
-          <span>{tCommon("offlineNotice")}</span>
-        </div>
-      ) : syncState.isSyncing ? (
-        <div
-          role="status"
-          aria-live="polite"
-          className="bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9] px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-medium"
-        >
-          <span className="text-sm" aria-hidden="true">🔄</span>
-          <span>Saving activities...</span>
-        </div>
-      ) : null}
 
       {/* 1. HOME SCREEN */}
       {screenMode === "home" && (
-        <>
-          <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] shadow-sm text-center space-y-4">
-            <div className="w-20 h-20 mx-auto rounded-full bg-[#F8F6F0] flex items-center justify-center text-4xl border-2 border-[#1B3B36]" aria-hidden="true">
+        <div className="flex-1 flex flex-col justify-center gap-6">
+          {/* Welcome card */}
+          <div
+            className="rounded-[var(--radius-card)] p-6 text-center space-y-3"
+            style={{
+              background: "var(--surface)",
+              border: "2.5px solid var(--primary)",
+              boxShadow: "var(--shadow-md)",
+            }}
+          >
+            <div
+              className="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl border-2"
+              style={{ background: "var(--primary-light)", borderColor: "var(--primary)" }}
+              aria-hidden="true"
+            >
               🌸
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#1B3B36]">
+            <h2
+              className="text-2xl md:text-3xl font-bold leading-snug"
+              style={{ color: "var(--primary)" }}
+            >
               {t("title")}
             </h2>
-            <p className="text-lg text-[#52504C] leading-relaxed max-w-sm mx-auto">
+            <p
+              className="text-lg leading-relaxed"
+              style={{ color: "var(--ink-soft)" }}
+            >
               {t("matchGamePrompt")}
             </p>
           </div>
 
-          <div className="pt-4 space-y-3">
+          {/* CTAs */}
+          <div className="space-y-3">
             <BigButton
               label={t("startSession")}
-              icon="▶️"
+              icon="▶"
               variant="primary"
               onClick={handleStartSession}
               aria-label={t("startSession")}
@@ -293,10 +296,10 @@ export default function PatientPlayPage() {
               aria-label="Play Family Photo Memories"
             />
           </div>
-        </>
+        </div>
       )}
 
-      {/* 2. PLAYING PHOTO QUESTION QUIZ */}
+      {/* 2. PHOTO QUIZ */}
       {screenMode === "photo_quiz" && (
         <PhotoQuestionActivity
           patientId={sessionCtx.state.patientId}
@@ -305,22 +308,31 @@ export default function PatientPlayPage() {
         />
       )}
 
-      {/* 3. PLAYING ADAPTIVE MATCH */}
+      {/* 3. MEMORY MATCH GAME */}
       {screenMode === "playing" && (
-        <div className="space-y-6">
+        <div className="flex-1 flex flex-col gap-5">
           <div className="text-center">
-            <h2 className="text-xl md:text-2xl font-bold text-[#1B3B36]">
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--ink)" }}
+            >
               {t("matchGameTitle")}
             </h2>
-            <p className="text-base text-[#52504C] mt-1" role="status" aria-live="polite">
+            <p
+              className="text-lg mt-1 min-h-[1.5em]"
+              role="status"
+              aria-live="polite"
+              style={{ color: feedback ? "var(--primary)" : "var(--ink-soft)" }}
+            >
               {feedback || hintMessage || t("matchGamePrompt")}
             </p>
           </div>
 
           {/* Cards Grid */}
-          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto w-full">
             {cards.map((card, idx) => {
-              const isFlipped = flippedIndices.includes(idx) || matchedKeys.includes(card.pairKey);
+              const isFlipped =
+                flippedIndices.includes(idx) || matchedKeys.includes(card.pairKey);
               const isMatched = matchedKeys.includes(card.pairKey);
 
               return (
@@ -329,35 +341,62 @@ export default function PatientPlayPage() {
                   type="button"
                   onClick={() => handleCardClick(idx)}
                   disabled={isMatched}
-                  className={`h-36 rounded-2xl border-3 flex flex-col items-center justify-center p-3 transition-all duration-150 select-none shadow-sm cursor-pointer ${
-                    isMatched
-                      ? "bg-[#EAF3EE] border-[#2D6A4F] text-[#2D6A4F]"
+                  className="h-36 rounded-[var(--radius-card)] flex flex-col items-center justify-center p-3 transition-all duration-200 select-none cursor-pointer"
+                  style={{
+                    minHeight: "72px",
+                    minWidth: "72px",
+                    border: isMatched
+                      ? "2.5px solid var(--success)"
                       : isFlipped
-                      ? "bg-white border-[#1B3B36] text-[#1C1C1A]"
-                      : "bg-[#1B3B36] border-[#1B3B36] text-white hover:bg-[#122824]"
-                  }`}
-                  style={{ minHeight: "72px", minWidth: "72px" }}
+                      ? "2.5px solid var(--primary)"
+                      : "2.5px solid var(--primary)",
+                    background: isMatched
+                      ? "var(--success-light)"
+                      : isFlipped
+                      ? "var(--surface)"
+                      : "var(--primary)",
+                    boxShadow: isFlipped && !isMatched
+                      ? "var(--shadow-md)"
+                      : "var(--shadow-sm)",
+                  }}
                   aria-label={isFlipped ? card.name : `Card ${idx + 1}`}
                 >
                   {isFlipped ? (
                     <>
-                      <span className="text-4xl mb-1" aria-hidden="true">{card.icon}</span>
-                      <span className="text-sm font-bold tracking-tight">{card.name}</span>
+                      <span className="text-4xl mb-1" aria-hidden="true">
+                        {card.icon}
+                      </span>
+                      <span
+                        className="text-sm font-bold tracking-tight"
+                        style={{
+                          color: isMatched ? "var(--success)" : "var(--ink)",
+                        }}
+                      >
+                        {card.name}
+                      </span>
                     </>
                   ) : (
-                    <span className="text-3xl opacity-80" aria-hidden="true">🌿</span>
+                    /* NER-inspired back face: three vertical leaf stripes */
+                    <div
+                      className="flex gap-1.5 items-center"
+                      aria-hidden="true"
+                    >
+                      <span style={{ fontSize: "1.4rem", opacity: 0.6 }}>🌿</span>
+                      <span style={{ fontSize: "1.8rem", opacity: 0.8 }}>🌿</span>
+                      <span style={{ fontSize: "1.4rem", opacity: 0.6 }}>🌿</span>
+                    </div>
                   )}
                 </button>
               );
             })}
           </div>
 
-          <div className="pt-2 text-center">
+          <div className="text-center pt-1">
             <button
               type="button"
               onClick={() => setScreenMode("break")}
-              className="text-base text-[#52504C] underline hover:text-[#1C1C1A] py-2 px-4"
-              style={{ minHeight: "44px" }}
+              className="text-base font-semibold underline py-2 px-4 rounded-xl transition-colors"
+              style={{ color: "var(--ink-soft)", minHeight: "44px" }}
             >
               {t("calmBreak")}
             </button>
@@ -365,40 +404,95 @@ export default function PatientPlayPage() {
         </div>
       )}
 
-      {/* 3. CALM BREAK & ORIENTATION CARD */}
+      {/* 4. CALM BREAK & ORIENTATION */}
       {screenMode === "break" && (
-        <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] shadow-sm space-y-6">
+        <div
+          className="rounded-[var(--radius-card)] p-6 space-y-5"
+          style={{
+            background: "var(--surface)",
+            border: "2.5px solid var(--primary)",
+            boxShadow: "var(--shadow-md)",
+          }}
+        >
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 mx-auto rounded-full bg-[#F8F6F0] flex items-center justify-center text-3xl border-2 border-[#1B3B36]" aria-hidden="true">
+            <div
+              className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl border-2"
+              style={{
+                background: "var(--primary-light)",
+                borderColor: "var(--primary)",
+              }}
+              aria-hidden="true"
+            >
               ☕
             </div>
-            <h2 className="text-2xl font-bold text-[#1B3B36]">{t("calmBreak")}</h2>
-            <p className="text-sm text-[#52504C]">{t("takeRest")}</p>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--primary)" }}
+            >
+              {t("calmBreak")}
+            </h2>
+            <p style={{ color: "var(--ink-soft)" }}>{t("takeRest")}</p>
           </div>
 
-          {/* Orientation Card Details */}
-          <div className="space-y-3 bg-[#F8F6F0] p-4 rounded-2xl border border-[#D1CEC4]">
+          {/* Orientation details */}
+          <div
+            className="space-y-3 p-4 rounded-[var(--radius-md)]"
+            style={{
+              background: "var(--surface-2)",
+              border: "1px solid var(--border)",
+            }}
+          >
             <div className="flex items-start gap-3">
-              <span className="text-2xl" aria-hidden="true">📅</span>
+              <span className="text-2xl shrink-0" aria-hidden="true">📅</span>
               <div>
-                <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">{t("todayIs")}</span>
-                <span className="text-base font-bold text-[#1C1C1A]">{orientationData.todayDateFormatted}</span>
+                <span
+                  className="text-xs font-bold block uppercase tracking-wider"
+                  style={{ color: "var(--ink-muted)" }}
+                >
+                  {t("todayIs")}
+                </span>
+                <span
+                  className="text-base font-bold block"
+                  style={{ color: "var(--ink)" }}
+                >
+                  {orientationData.todayDateFormatted}
+                </span>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <span className="text-2xl" aria-hidden="true">💊</span>
+              <span className="text-2xl shrink-0" aria-hidden="true">💊</span>
               <div>
-                <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">{t("medicineReminder")}</span>
-                <span className="text-base font-medium text-[#1C1C1A]">{orientationData.nextMedicineText}</span>
+                <span
+                  className="text-xs font-bold block uppercase tracking-wider"
+                  style={{ color: "var(--ink-muted)" }}
+                >
+                  {t("medicineReminder")}
+                </span>
+                <span
+                  className="text-base font-medium block"
+                  style={{ color: "var(--ink)" }}
+                >
+                  {orientationData.nextMedicineText}
+                </span>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <span className="text-2xl" aria-hidden="true">🏡</span>
+              <span className="text-2xl shrink-0" aria-hidden="true">🏡</span>
               <div>
-                <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">{t("whoIsHome")}</span>
-                <span className="text-base font-medium text-[#1C1C1A]">{orientationData.whoIsHomeText}</span>
+                <span
+                  className="text-xs font-bold block uppercase tracking-wider"
+                  style={{ color: "var(--ink-muted)" }}
+                >
+                  {t("whoIsHome")}
+                </span>
+                <span
+                  className="text-base font-medium block"
+                  style={{ color: "var(--ink)" }}
+                >
+                  {orientationData.whoIsHomeText}
+                </span>
               </div>
             </div>
           </div>
@@ -411,15 +505,39 @@ export default function PatientPlayPage() {
         </div>
       )}
 
-      {/* 4. COMPLETED SESSION */}
+      {/* 5. COMPLETED SESSION */}
       {screenMode === "completed" && (
-        <div className="bg-white rounded-3xl p-6 border-3 border-[#2D6A4F] shadow-sm text-center space-y-6">
-          <div className="w-20 h-20 mx-auto rounded-full bg-[#EAF3EE] flex items-center justify-center text-4xl border-2 border-[#2D6A4F]" aria-hidden="true">
+        <div
+          className="rounded-[var(--radius-card)] p-6 text-center space-y-5 animate-pop"
+          style={{
+            background: "var(--surface)",
+            border: "2.5px solid var(--success)",
+            boxShadow: "var(--shadow-md)",
+          }}
+        >
+          <div
+            className="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl border-2"
+            style={{
+              background: "var(--success-light)",
+              borderColor: "var(--success)",
+            }}
+            aria-hidden="true"
+          >
             🌱
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-[#2D6A4F]">{t("feedbackRight")}</h2>
-            <p className="text-base text-[#52504C] mt-2">{t("takeRest")}</p>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--success)" }}
+            >
+              {t("feedbackRight")}
+            </h2>
+            <p
+              className="text-base mt-2"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t("takeRest")}
+            </p>
           </div>
           <BigButton
             label={tCommon("continue")}

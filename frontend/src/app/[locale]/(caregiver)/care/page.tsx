@@ -8,6 +8,10 @@ import { MemoryUploadModal, type MemoryItem } from "./MemoryUploadModal";
 import { QuizApprovalQueue } from "./QuizApprovalQueue";
 import { CaregiverTrendDashboard } from "./CaregiverTrendDashboard";
 import { ONBOARDING_STRINGS } from "./strings";
+import { MemoryCard } from "@/components/common/MemoryCard";
+import { AlertCard } from "@/components/common/AlertCard";
+import { SyncStatusChip } from "@/components/common/SyncStatusChip";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export default function CaregiverDashboardPage() {
   const t = useTranslations("Care");
@@ -18,8 +22,9 @@ export default function CaregiverDashboardPage() {
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [onboardedElder, setOnboardedElder] = useState<string | null>("Bhaben Baruah");
   const [isUploadingMemory, setIsUploadingMemory] = useState(false);
+  const [isAlertAcknowledged, setIsAlertAcknowledged] = useState(false);
+  const [isUnwell, setIsUnwell] = useState(false);
 
-  // Initial memories bank with NER cultural artifacts
   const [memories, setMemories] = useState<MemoryItem[]>([
     {
       id: "mem-01",
@@ -53,7 +58,7 @@ export default function CaregiverDashboardPage() {
 
   if (isOnboarding) {
     return (
-      <div className="flex-1 max-w-2xl mx-auto w-full py-4 space-y-6">
+      <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 space-y-6">
         <OnboardingWizard
           onComplete={() => {
             setOnboardedElder("Bhaben Baruah");
@@ -65,37 +70,79 @@ export default function CaregiverDashboardPage() {
     );
   }
 
+  const showAlert = !isAlertAcknowledged && !isUnwell;
+
   return (
-    <div className="flex-1 max-w-3xl mx-auto w-full py-4 space-y-6">
+    <div
+      className="flex-1 max-w-3xl mx-auto w-full px-4 py-5 space-y-6"
+    >
+      {/* ── Top Navigation Bar ── */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl no-underline"
-          style={{ minHeight: "44px" }}
+          className="inline-flex items-center gap-2 text-base font-semibold p-2 rounded-xl no-underline transition-colors"
+          style={{ color: "var(--primary)", minHeight: "44px" }}
         >
-          <span aria-hidden="true">⬅️</span>
+          <span aria-hidden="true">←</span>
           <span>{tCommon("back")}</span>
         </Link>
-        <span className="text-sm font-semibold text-[#C85A32] bg-[#FDF1EC] px-3 py-1.5 rounded-full border border-[#C85A32]">
-          Caregiver Portal
-        </span>
+        <div className="flex items-center gap-2">
+          <SyncStatusChip />
+          <span
+            className="text-sm font-bold px-3 py-1.5 rounded-full border"
+            style={{
+              background: "var(--accent-light)",
+              color: "var(--accent-dark)",
+              borderColor: "var(--accent)",
+            }}
+          >
+            Caregiver Portal
+          </span>
+        </div>
       </div>
 
-      {/* Onboarding Callout Card */}
-      <div className="bg-white rounded-3xl p-6 border-2 border-[#1B3B36] shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* ── At-a-Glance Header Strip ── */}
+      <div
+        className="rounded-[var(--radius-card)] p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-sm)",
+        }}
+      >
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9]">
-              DPDP 2023 Consent
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-full border"
+              style={{
+                background: "var(--success-light)",
+                color: "var(--success)",
+                borderColor: "var(--success)",
+              }}
+            >
+              DPDP 2023 Consent ✓
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1]">
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-full border"
+              style={{
+                background: "var(--alert-light)",
+                color: "var(--alert)",
+                borderColor: "var(--alert)",
+              }}
+            >
               ⚖️ {strings.lawyerPending}
             </span>
           </div>
-          <h2 className="text-xl font-bold text-[#1C1C1A]">
-            {onboardedElder ? `Registered Elder: ${onboardedElder}` : "Onboard Elder & Consent"}
+          <h2
+            className="text-xl font-bold"
+            style={{ color: "var(--ink)" }}
+          >
+            {onboardedElder ? `Elder: ${onboardedElder}` : "Onboard Elder & Consent"}
           </h2>
-          <p className="text-sm text-[#52504C]">
+          <p
+            className="text-sm"
+            style={{ color: "var(--ink-soft)" }}
+          >
             {onboardedElder
               ? "Verifiable guardian consent active. Calibration baseline ready."
               : "Complete the 6-step plain-language guardian consent flow."}
@@ -105,105 +152,122 @@ export default function CaregiverDashboardPage() {
           type="button"
           id="onboard-elder-btn"
           onClick={() => setIsOnboarding(true)}
-          className="px-5 py-3 rounded-2xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-sm font-bold shadow-xs transition-colors shrink-0"
-          style={{ minHeight: "48px" }}
+          className="px-4 py-2.5 rounded-[var(--radius-md)] text-sm font-bold transition-colors shrink-0"
+          style={{
+            background: "var(--surface-2)",
+            color: "var(--ink-soft)",
+            border: "1px solid var(--border)",
+            minHeight: "44px",
+          }}
         >
-          {onboardedElder ? "Re-evaluate Consent" : "Start Onboarding"}
+          {onboardedElder ? "⚙ Re-evaluate Consent" : "Start Onboarding"}
         </button>
       </div>
 
-      {/* Longitudinal Caregiver Trend Dashboard (B19) */}
-      <CaregiverTrendDashboard patientName={onboardedElder || "Bhaben Baruah"} />
+      {/* ── Alert (if active) ── */}
+      {showAlert && (
+        <AlertCard
+          patientName={onboardedElder || "Bhaben Baruah"}
+          message="Activity has been lower than usual over the last few days. This may be worth a check-in."
+          observedValue={0.42}
+          baselineMedian={0.82}
+          robustZ={-2.85}
+          onAcknowledge={() => setIsAlertAcknowledged(true)}
+          onMarkUnwell={() => setIsUnwell(true)}
+          isUnwell={isUnwell}
+        />
+      )}
 
-      {/* Memories Bank Management Section */}
-      <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-2">
+      {/* ── Longitudinal 14-Day Trend ── */}
+      <CaregiverTrendDashboard
+        patientName={onboardedElder || "Bhaben Baruah"}
+        initialUnwell={isUnwell}
+      />
+
+      {/* ── Memories Bank ── */}
+      <section
+        className="rounded-[var(--radius-card)] p-5 space-y-4"
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-sm)",
+        }}
+        aria-labelledby="memories-heading"
+      >
+        <div className="flex items-start justify-between flex-wrap gap-3">
           <div>
-            <h3 className="text-xl font-bold text-[#1C1C1A]">Family Memories Bank</h3>
-            <p className="text-xs text-[#52504C]">
-              Private photos, songs, and family stories used to personalize reminiscence activities.
+            <h3
+              id="memories-heading"
+              className="text-lg font-bold"
+              style={{ color: "var(--ink)" }}
+            >
+              Family Memories Bank
+            </h3>
+            <p
+              className="text-xs mt-0.5"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              Private photos, songs, and stories used in reminiscence activities.
             </p>
           </div>
           <button
             type="button"
             id="upload-memory-btn"
             onClick={() => setIsUploadingMemory(true)}
-            className="px-4 py-2.5 rounded-xl bg-[#C85A32] hover:bg-[#B04C28] text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
-            style={{ minHeight: "44px" }}
+            className="px-4 py-2.5 rounded-[var(--radius-md)] text-sm font-bold transition-colors flex items-center gap-1.5"
+            style={{
+              background: "var(--accent)",
+              color: "var(--accent-ink)",
+              border: "none",
+              minHeight: "44px",
+            }}
           >
-            <span aria-hidden="true">➕</span>
+            <span aria-hidden="true">+</span>
             <span>Add Memory</span>
           </button>
         </div>
 
-        {/* List of Memories */}
-        <div className="space-y-3 pt-2">
-          {memories.map((mem) => (
-            <div
-              key={mem.id}
-              className="p-4 rounded-2xl bg-[#F8F6F0] border border-[#D1CEC4] flex flex-col md:flex-row items-start md:items-center justify-between gap-3"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl p-2 bg-white rounded-xl border border-[#D1CEC4]" aria-hidden="true">
-                  {mem.memory_type === "photo" ? "📸" : mem.memory_type === "song" ? "🎵" : "📖"}
-                </span>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#52504C]">
-                      {mem.memory_type}
-                    </span>
-                    {mem.year && (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-white border border-[#D1CEC4] text-[#1C1C1A]">
-                        {mem.year}
-                      </span>
-                    )}
-                    {mem.is_offline_pending && (
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#FFF8E7] text-[#7A5800] border border-[#E0D0A0]">
-                        Saved locally
-                      </span>
-                    )}
-                  </div>
-                  <h4 className="text-sm md:text-base font-bold text-[#1C1C1A] leading-snug">
-                    {mem.caption}
-                  </h4>
-                  {mem.people.length > 0 && (
-                    <span className="text-xs text-[#52504C] block">
-                      With: {mem.people.join(", ")}
-                    </span>
-                  )}
-                </div>
-              </div>
+        {/* Memory cards grid */}
+        {memories.length === 0 ? (
+          <EmptyState
+            icon="📸"
+            title="No memories yet"
+            description="Add a photo, song, or story that your elder cherishes. It will be used in their personalised activities."
+            action={
+              <button
+                type="button"
+                onClick={() => setIsUploadingMemory(true)}
+                className="px-5 py-2.5 rounded-[var(--radius-md)] text-sm font-bold"
+                style={{
+                  background: "var(--accent)",
+                  color: "var(--accent-ink)",
+                  border: "none",
+                }}
+              >
+                Add a Memory
+              </button>
+            }
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {memories.map((mem) => (
+              <MemoryCard
+                key={mem.id}
+                memoryType={mem.memory_type as "photo" | "song" | "story"}
+                caption={mem.caption}
+                people={mem.people}
+                year={mem.year}
+                isApproved={mem.is_approved}
+                isOfflinePending={mem.is_offline_pending}
+                onApprove={() => toggleApproval(mem.id)}
+                onDelete={() => deleteMemory(mem.id)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
 
-              <div className="flex items-center gap-2 self-end md:self-center">
-                {/* Approval toggle */}
-                <button
-                  type="button"
-                  onClick={() => toggleApproval(mem.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors ${
-                    mem.is_approved
-                      ? "bg-[#EAF3EE] text-[#1B3B36] border-[#A7D1B9]"
-                      : "bg-[#FDF1EC] text-[#9A3412] border-[#F5C2B1]"
-                  }`}
-                  style={{ minHeight: "36px" }}
-                >
-                  {mem.is_approved ? "✓ Approved" : "Pending"}
-                </button>
-                {/* Delete button */}
-                <button
-                  type="button"
-                  onClick={() => deleteMemory(mem.id)}
-                  aria-label="Delete memory"
-                  className="p-2 text-[#52504C] hover:text-[#9A3412] text-sm rounded-lg"
-                >
-                  🗑️
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* AI Question Approval Queue (B15/B16) */}
+      {/* ── AI Question Approval Queue ── */}
       <QuizApprovalQueue patientId="patient-demo-ner" />
 
       {/* Upload Memory Modal */}
