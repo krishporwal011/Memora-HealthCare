@@ -19,7 +19,7 @@
 | **Phase 5** | Cinematic Landing Showcase (`/[locale]`) | ✅ Completed | Gallery & Album dual-view, 4 chapters, entry modal, corner HUD, 100% static SSG; all 75 tests green |
 | **Phase 6** | Caregiver Redesign (`/care`, `/care/timeline`, `/care/people`) | ✅ Completed | Plain-language stories, Disclosure numbers, photo-led detail view, /care/timeline, /care/people; all 78 tests green |
 | **Phase 7** | ASHA Triage & PDF Redesign (`/asha`) | ✅ Completed | Token StatusChips, dense calm layout, explainable anomaly numbers, PDF export; all 78 tests green |
-| **Phase 8** | Shared Utility Screens (`/sync`, `/settings`, `/privacy`, `/offline`, 404) | ⏳ Pending | - |
+| **Phase 8** | Shared Utility Screens (`/sync`, `/settings`, `/privacy`, `/offline`, 404) | ✅ Completed | Offline sync center, settings, plain-language privacy, offline guide, friendly 404; all 83 tests green |
 | **Phase 9** | 3D Memory House (`/[locale]/house`, lazy-loaded R3F + Album fallback) | ⏳ Pending | - |
 | **Phase 10**| Full QA, Multi-Viewport Browser Verification & Hardening | ⏳ Pending | - |
 
