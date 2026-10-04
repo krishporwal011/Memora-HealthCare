@@ -21,7 +21,7 @@
 | **Phase 7** | ASHA Triage & PDF Redesign (`/asha`) | ✅ Completed | Token StatusChips, dense calm layout, explainable anomaly numbers, PDF export; all 78 tests green |
 | **Phase 8** | Shared Utility Screens (`/sync`, `/settings`, `/privacy`, `/offline`, 404) | ✅ Completed | Offline sync center, settings, plain-language privacy, offline guide, friendly 404; all 83 tests green |
 | **Phase 9** | 3D Memory House (`/[locale]/house`, lazy-loaded R3F + Album fallback) | ✅ Completed | Lazy-loaded R3F wireframe hall, particles, 56px walk controls, FPS monitor, and editorial Album fallback; all 86 tests green |
-| **Phase 10**| Full QA, Multi-Viewport Browser Verification & Hardening | ⏳ In Progress | - |
+| **Phase 10**| Full QA, Multi-Viewport Browser Verification & Hardening | ✅ Completed | 138 tests green, 99 SSG pages, browser subagent multi-viewport verified, QA_REPORT.md created |
 
 ---
 
