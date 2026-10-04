@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Check, X, Sparkles, Camera } from "lucide-react";
 
 export interface QuizOption {
   id: string;
@@ -150,18 +151,18 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs space-y-5">
+    <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-xs space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-xl font-bold text-[#1C1C1A]">AI Question Approval Queue</h3>
+            <h3 className="text-xl font-bold text-[var(--ink)]">AI Question Approval Queue</h3>
             {pendingItems.length > 0 && (
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#C85A32] text-white">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[var(--accent)] text-white">
                 {pendingItems.length} awaiting review
               </span>
             )}
           </div>
-          <p className="text-xs text-[#52504C] mt-1">
+          <p className="text-xs text-[var(--ink-soft)] mt-1">
             Caregiver safety gate: Unapproved questions are <strong>never</strong> served to the elder. Approved questions become immediately available for offline play.
           </p>
         </div>
@@ -171,9 +172,9 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
         <div
           role="status"
           aria-live="polite"
-          className="bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2"
+          className="bg-[var(--primary-light)] text-[var(--primary)] border border-[var(--border)] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2"
         >
-          <span aria-hidden="true">✓</span>
+          <Check className="w-4 h-4 text-[var(--primary)]" aria-hidden="true" />
           <span>{notice}</span>
         </div>
       )}
@@ -181,10 +182,10 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
       {/* PENDING ITEMS */}
       <div className="space-y-4">
         {pendingItems.length === 0 ? (
-          <div className="p-6 rounded-2xl bg-[#F8F6F0] border border-[#D1CEC4] text-center space-y-1">
-            <span className="text-3xl block" aria-hidden="true">✨</span>
-            <p className="text-sm font-semibold text-[#1C1C1A]">Queue is Clear</p>
-            <p className="text-xs text-[#52504C]">
+          <div className="p-6 rounded-2xl bg-[var(--bg)] border border-[var(--border)] text-center space-y-1">
+            <Sparkles className="w-8 h-8 mx-auto text-[var(--accent)]" aria-hidden="true" />
+            <p className="text-sm font-semibold text-[var(--ink)]">Queue is Clear</p>
+            <p className="text-xs text-[var(--ink-soft)]">
               All AI-generated reminiscence questions have been reviewed. New items appear here when memories are added.
             </p>
           </div>
@@ -192,21 +193,21 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
           pendingItems.map((item) => (
             <div
               key={item.id}
-              className="p-5 rounded-2xl bg-[#FAF8F5] border-2 border-[#E0D0A0] space-y-4 shadow-2xs"
+              className="p-5 rounded-2xl bg-[var(--bg)] border-2 border-[var(--accent-light)] space-y-4 shadow-2xs"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
                   <div
-                    className="w-12 h-12 rounded-xl bg-white border border-[#D1CEC4] flex items-center justify-center text-2xl shrink-0"
+                    className="w-12 h-12 rounded-xl bg-white border border-[var(--border)] flex items-center justify-center text-2xl shrink-0"
                     aria-hidden="true"
                   >
-                    {item.image_url || "📸"}
+                    <Camera className="w-6 h-6 text-[var(--primary)]" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#7A5800] bg-[#FFF8E7] px-2 py-0.5 rounded-md border border-[#E0D0A0]">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent-dark)] bg-[var(--accent-light)] px-2 py-0.5 rounded-md border border-[var(--accent)]">
                       AI Question • {item.photo_title || "Family Memory"}
                     </span>
-                    <h4 className="text-base font-bold text-[#1C1C1A] mt-1.5 leading-snug">
+                    <h4 className="text-base font-bold text-[var(--ink)] mt-1.5 leading-snug">
                       {item.question_text}
                     </h4>
                   </div>
@@ -214,21 +215,21 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
               </div>
 
               {/* Options with correct indicator */}
-              <div className="space-y-2 pl-2 border-l-2 border-[#D1CEC4]">
-                <span className="text-xs font-semibold text-[#52504C] block">Answer Options:</span>
+              <div className="space-y-2 pl-2 border-l-2 border-[var(--border)]">
+                <span className="text-xs font-semibold text-[var(--ink-soft)] block">Answer Options:</span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {item.options.map((opt) => (
                     <div
                       key={opt.id}
                       className={`p-2.5 rounded-xl border text-xs font-medium flex items-center justify-between gap-1.5 ${
                         opt.is_correct
-                          ? "bg-[#EAF3EE] border-[#2D6A4F] text-[#1B3B36] font-bold"
-                          : "bg-white border-[#D1CEC4] text-[#52504C]"
+                          ? "bg-[var(--primary-light)] border-[var(--primary-dark)] text-[var(--primary)] font-bold"
+                          : "bg-white border-[var(--border)] text-[var(--ink-soft)]"
                       }`}
                     >
                       <span>{opt.text}</span>
                       {opt.is_correct && (
-                        <span className="text-[10px] text-[#2D6A4F] bg-white px-1.5 py-0.5 rounded-md border border-[#A7D1B9]">
+                        <span className="text-[10px] text-[var(--primary)] bg-white px-1.5 py-0.5 rounded-md border border-[var(--border)]">
                           ✓ Correct
                         </span>
                       )}
@@ -243,19 +244,21 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
                   type="button"
                   id={`reject-btn-${item.id}`}
                   onClick={() => handleReject(item)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-[#9A3412] hover:bg-[#FDF1EC] border border-[#F5C2B1] transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--alert)] hover:bg-[var(--alert-light)] border border-[var(--alert)] transition-colors inline-flex items-center gap-1.5"
                   style={{ minHeight: "40px" }}
                 >
-                  ✕ Reject Question
+                  <X className="w-4 h-4" />
+                  <span>Reject Question</span>
                 </button>
                 <button
                   type="button"
                   id={`approve-btn-${item.id}`}
                   onClick={() => handleApprove(item)}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-[#1B3B36] hover:bg-[#2D6A4F] text-white shadow-xs transition-colors"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white shadow-xs transition-colors inline-flex items-center gap-1.5"
                   style={{ minHeight: "40px" }}
                 >
-                  ✓ Approve for Elder
+                  <Check className="w-4 h-4" />
+                  <span>Approve for Elder</span>
                 </button>
               </div>
             </div>
@@ -265,12 +268,12 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
 
       {/* APPROVED ITEMS SECTION */}
       {approvedItems.length > 0 && (
-        <div className="pt-4 border-t border-[#D1CEC4] space-y-3">
+        <div className="pt-4 border-t border-[var(--border)] space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-[#1C1C1A]">
+            <h4 className="text-sm font-bold text-[var(--ink)]">
               Active in Elder's Offline Bank ({approvedItems.length})
             </h4>
-            <span className="text-[11px] font-semibold text-[#2D6A4F]">
+            <span className="text-[11px] font-semibold text-[var(--primary)]">
               Ready for offline play
             </span>
           </div>
@@ -279,13 +282,13 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
             {approvedItems.map((item) => (
               <div
                 key={item.id}
-                className="p-3 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4] flex items-center justify-between gap-3 text-xs"
+                className="p-3 rounded-xl bg-[var(--bg)] border border-[var(--border)] flex items-center justify-between gap-3 text-xs"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-base" aria-hidden="true">{item.image_url || "📸"}</span>
+                  <Camera className="w-4 h-4 text-[var(--primary)]" aria-hidden="true" />
                   <div>
-                    <span className="font-semibold text-[#1C1C1A] block">{item.question_text}</span>
-                    <span className="text-[11px] text-[#52504C]">
+                    <span className="font-semibold text-[var(--ink)] block">{item.question_text}</span>
+                    <span className="text-[11px] text-[var(--ink-soft)]">
                       Correct: {item.options.find((o) => o.is_correct)?.text}
                     </span>
                   </div>
@@ -293,7 +296,7 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
                 <button
                   type="button"
                   onClick={() => handleRevoke(item)}
-                  className="text-xs text-[#9A3412] hover:underline shrink-0 p-1"
+                  className="text-xs text-[var(--alert)] hover:underline shrink-0 p-1"
                 >
                   Revoke
                 </button>

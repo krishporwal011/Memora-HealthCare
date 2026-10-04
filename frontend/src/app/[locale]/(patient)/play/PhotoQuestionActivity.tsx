@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { Image, Camera, Check, ArrowRight } from "lucide-react";
 import { BigButton } from "@/components/patient/BigButton";
 import { recordGameEventOffline } from "@/lib/offline";
 import { syncAllUnsynced } from "@/lib/sync";
@@ -111,10 +112,10 @@ export function PhotoQuestionActivity({
 
   if (!currentQ) {
     return (
-      <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] text-center space-y-4">
-        <span className="text-4xl block" aria-hidden="true">🖼️</span>
-        <h3 className="text-xl font-bold text-[#1B3B36]">No Photo Questions Available</h3>
-        <p className="text-sm text-[#52504C]">
+      <div className="bg-white rounded-3xl p-6 border-3 border-[var(--primary)] text-center space-y-4">
+        <Image className="w-10 h-10 mx-auto text-[var(--primary)]" aria-hidden="true" />
+        <h3 className="text-xl font-bold text-[var(--primary)]">No Photo Questions Available</h3>
+        <p className="text-sm text-[var(--ink-soft)]">
           Your caregiver has not approved any photo questions yet.
         </p>
         <BigButton label="Return to Activities" variant="primary" onClick={onExit} />
@@ -125,18 +126,22 @@ export function PhotoQuestionActivity({
   return (
     <div className="space-y-6 max-w-lg mx-auto w-full">
       {/* Photo Memory Display */}
-      <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] shadow-sm text-center space-y-4">
+      <div className="bg-white rounded-3xl p-6 border-3 border-[var(--primary)] shadow-sm text-center space-y-4">
         <div
-          className="w-24 h-24 mx-auto rounded-2xl bg-[#F8F6F0] flex items-center justify-center text-5xl border-2 border-[#1B3B36] shadow-xs"
+          className="w-24 h-24 mx-auto rounded-2xl bg-[var(--bg)] flex items-center justify-center text-5xl border-2 border-[var(--primary)] shadow-xs"
           aria-hidden="true"
         >
-          {currentQ.image_url || "📸"}
+          {currentQ.image_url ? (
+            <img src={currentQ.image_url} alt="" className="w-full h-full object-cover rounded-2xl" />
+          ) : (
+            <Camera className="w-12 h-12 text-[var(--primary)]" />
+          )}
         </div>
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#52504C] bg-[#F8F6F0] px-3 py-1 rounded-full border border-[#D1CEC4]">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--ink-soft)] bg-[var(--bg)] px-3 py-1 rounded-full border border-[var(--border)]">
             {currentQ.photo_title || "Family Memory Photo"}
           </span>
-          <h2 className="text-xl md:text-2xl font-bold text-[#1B3B36] mt-3 leading-snug">
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--primary)] mt-3 leading-snug">
             {currentQ.question_text}
           </h2>
         </div>
@@ -146,15 +151,15 @@ export function PhotoQuestionActivity({
       <div className="space-y-3" role="group" aria-label="Answer options">
         {currentQ.options.map((opt, idx) => {
           const isSelected = selectedOptionId === opt.id;
-          let btnStyle = "bg-white border-[#1B3B36] text-[#1C1C1A] hover:bg-[#F2EFE9]";
+          let btnStyle = "bg-white border-[var(--primary)] text-[var(--ink)] hover:bg-[var(--surface-hover)]";
 
           if (isAnswered) {
             if (opt.is_correct) {
-              btnStyle = "bg-[#EAF3EE] border-[#2D6A4F] text-[#1B3B36] font-bold";
+              btnStyle = "bg-[var(--primary-light)] border-[var(--primary-dark)] text-[var(--primary)] font-bold";
             } else if (isSelected && !opt.is_correct) {
-              btnStyle = "bg-[#FDF1EC] border-[#9A3412] text-[#9A3412]";
+              btnStyle = "bg-[var(--alert-light)] border-[var(--alert)] text-[var(--alert)]";
             } else {
-              btnStyle = "bg-white border-[#D1CEC4] text-[#8C8983] opacity-60";
+              btnStyle = "bg-white border-[var(--border)] text-[var(--ink-muted)] opacity-60";
             }
           }
 
@@ -171,7 +176,7 @@ export function PhotoQuestionActivity({
             >
               <span>{opt.text}</span>
               {isAnswered && opt.is_correct && (
-                <span className="text-xl" aria-hidden="true">✓</span>
+                <Check className="w-6 h-6 text-[var(--primary)]" aria-hidden="true" />
               )}
             </button>
           );
@@ -183,9 +188,9 @@ export function PhotoQuestionActivity({
         <div
           role="status"
           aria-live="polite"
-          className="p-4 rounded-2xl bg-[#F8F6F0] border-2 border-[#1B3B36] text-center"
+          className="p-4 rounded-2xl bg-[var(--bg)] border-2 border-[var(--primary)] text-center"
         >
-          <p className="text-base font-bold text-[#1B3B36]">{feedback}</p>
+          <p className="text-base font-bold text-[var(--primary)]">{feedback}</p>
         </div>
       )}
 
@@ -194,7 +199,7 @@ export function PhotoQuestionActivity({
         <button
           type="button"
           onClick={onExit}
-          className="text-sm font-semibold text-[#52504C] hover:text-[#1C1C1A] underline py-2 px-3"
+          className="text-sm font-semibold text-[var(--ink-soft)] hover:text-[var(--ink)] underline py-2 px-3"
           style={{ minHeight: "44px" }}
         >
           Back to Activities
@@ -205,10 +210,11 @@ export function PhotoQuestionActivity({
             type="button"
             id="photo-next-btn"
             onClick={handleNext}
-            className="px-6 py-3 rounded-2xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-base font-bold shadow-xs transition-colors"
+            className="px-6 py-3 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white text-base font-bold shadow-xs transition-colors inline-flex items-center gap-2"
             style={{ minHeight: "56px" }}
           >
-            {currentIndex + 1 < questions.length ? "Next Memory ➔" : "Finish Session ➔"}
+            <span>{currentIndex + 1 < questions.length ? "Next Memory" : "Finish Session"}</span>
+            <ArrowRight className="w-5 h-5" aria-hidden="true" />
           </button>
         )}
       </div>

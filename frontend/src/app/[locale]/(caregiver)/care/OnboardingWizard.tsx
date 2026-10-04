@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale } from "next-intl";
+import { Scale, Lightbulb, Sprout } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { ONBOARDING_STRINGS } from "./strings";
 
@@ -102,13 +103,13 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-[#1B3B36] shadow-sm max-w-xl mx-auto space-y-6">
+    <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-[var(--primary)] shadow-sm max-w-xl mx-auto space-y-6">
       {/* Progress tracker */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#D1CEC4]">
-        <span className="text-xs font-bold text-[#52504C] uppercase tracking-wider">
+      <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+        <span className="text-xs font-bold text-[var(--ink-soft)] uppercase tracking-wider">
           Step {step} of 6
         </span>
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9]">
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[var(--primary-light)] text-[var(--primary)] border border-[var(--border)]">
           {step === 1 && strings.stepSignIn}
           {step === 2 && strings.stepProfile}
           {step === 3 && strings.stepConsent}
@@ -121,7 +122,7 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
       {submitError && (
         <div
           role="alert"
-          className="bg-[#FDF1EC] text-[#9A3412] p-3 rounded-xl border border-[#F5C2B1] text-sm"
+          className="bg-[var(--alert-light)] text-[var(--alert)] p-3 rounded-xl border border-[var(--alert)] text-sm"
         >
           {submitError}
         </div>
@@ -131,13 +132,13 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
       {step === 1 && (
         <div className="space-y-4">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-[#1C1C1A]">{strings.stepSignIn}</h2>
-            <p className="text-sm text-[#52504C]">
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{strings.stepSignIn}</h2>
+            <p className="text-sm text-[var(--ink-soft)]">
               Sign in with your phone number to manage family memories and track progress.
             </p>
           </div>
           <div>
-            <label htmlFor="caregiver-phone" className="block text-sm font-semibold text-[#1C1C1A] mb-1">
+            <label htmlFor="caregiver-phone" className="block text-sm font-semibold text-[var(--ink)] mb-1">
               {strings.caregiverPhoneLabel}
             </label>
             <input
@@ -145,7 +146,7 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
               type="tel"
               value={caregiverPhone}
               onChange={(e) => setCaregiverPhone(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-[#D1CEC4] focus:border-[#1B3B36] text-base font-medium outline-hidden"
+              className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] focus:border-[var(--primary)] text-base font-medium outline-hidden"
               style={{ minHeight: "48px" }}
             />
           </div>
@@ -156,14 +157,14 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
       {step === 2 && (
         <div className="space-y-4">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-[#1C1C1A]">{strings.stepProfile}</h2>
-            <p className="text-sm text-[#52504C]">
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{strings.stepProfile}</h2>
+            <p className="text-sm text-[var(--ink-soft)]">
               Tell us your name and the elder you are assisting.
             </p>
           </div>
           <div className="space-y-3">
             <div>
-              <label htmlFor="caregiver-name" className="block text-sm font-semibold text-[#1C1C1A] mb-1">
+              <label htmlFor="caregiver-name" className="block text-sm font-semibold text-[var(--ink)] mb-1">
                 {strings.caregiverNameLabel}
               </label>
               <input
@@ -172,12 +173,12 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
                 placeholder="e.g., Jonali Baruah"
                 value={caregiverName}
                 onChange={(e) => setCaregiverName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-[#D1CEC4] focus:border-[#1B3B36] text-base outline-hidden"
+                className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] focus:border-[var(--primary)] text-base outline-hidden"
                 style={{ minHeight: "48px" }}
               />
             </div>
             <div>
-              <label htmlFor="elder-name" className="block text-sm font-semibold text-[#1C1C1A] mb-1">
+              <label htmlFor="elder-name" className="block text-sm font-semibold text-[var(--ink)] mb-1">
                 {strings.elderNameLabel}
               </label>
               <input
@@ -186,7 +187,7 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
                 placeholder="e.g., Bhaben Baruah"
                 value={elderName}
                 onChange={(e) => setElderName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-[#1B3B36] text-base outline-hidden"
+                className="w-full px-4 py-3 rounded-xl border-2 border-[var(--primary)] text-base outline-hidden"
                 style={{ minHeight: "48px" }}
               />
             </div>
@@ -198,28 +199,29 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
       {step === 3 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-2xl font-bold text-[#1C1C1A]">{strings.stepConsent}</h2>
-            <span className="text-xs font-bold text-[#9A3412] bg-[#FDF1EC] px-2.5 py-1 rounded-full border border-[#F5C2B1]">
-              ⚖️ {strings.lawyerPending}
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{strings.stepConsent}</h2>
+            <span className="text-xs font-bold text-[var(--alert)] bg-[var(--alert-light)] px-2.5 py-1 rounded-full border border-[var(--alert)] inline-flex items-center gap-1.5">
+              <Scale className="w-3.5 h-3.5" />
+              <span>{strings.lawyerPending}</span>
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#F8F6F0] border border-[#D1CEC4] space-y-3 text-sm text-[#1C1C1A] leading-relaxed break-words">
+          <div className="p-4 rounded-2xl bg-[var(--bg)] border border-[var(--border)] space-y-3 text-sm text-[var(--ink)] leading-relaxed break-words">
             <p>{strings.consentBody}</p>
-            <div className="p-3 bg-white rounded-xl border border-[#D1CEC4] text-xs text-[#52504C]">
+            <div className="p-3 bg-white rounded-xl border border-[var(--border)] text-xs text-[var(--ink-soft)]">
               <strong>Non-Diagnostic Commitment:</strong> Memora never diagnoses, stages conditions, or prescribes treatments. Data is protected under India DPDP Act 2023.
             </div>
           </div>
 
-          <label className="flex items-start gap-3 cursor-pointer p-2 rounded-xl hover:bg-[#F8F6F0]">
+          <label className="flex items-start gap-3 cursor-pointer p-2 rounded-xl hover:bg-[var(--bg)]">
             <input
               type="checkbox"
               id="consent-check"
               checked={consentAccepted}
               onChange={(e) => setConsentAccepted(e.target.checked)}
-              className="w-6 h-6 mt-0.5 rounded accent-[#1B3B36] shrink-0 cursor-pointer"
+              className="w-6 h-6 mt-0.5 rounded accent-[var(--primary)] shrink-0 cursor-pointer"
             />
-            <span className="text-sm font-medium text-[#1C1C1A]">
+            <span className="text-sm font-medium text-[var(--ink)]">
               I have read and accept the plain-language terms on behalf of my family.
             </span>
           </label>
@@ -230,33 +232,33 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
       {step === 4 && (
         <div className="space-y-4">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-[#1C1C1A]">{strings.stepGuardian}</h2>
-            <p className="text-xs text-[#52504C]">{strings.capacityExplanation}</p>
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{strings.stepGuardian}</h2>
+            <p className="text-xs text-[var(--ink-soft)]">{strings.capacityExplanation}</p>
           </div>
 
           {/* Capacity Question */}
-          <div className="p-4 rounded-2xl bg-[#F8F6F0] border border-[#D1CEC4] space-y-3">
-            <span className="text-sm font-bold text-[#1C1C1A] block">
+          <div className="p-4 rounded-2xl bg-[var(--bg)] border border-[var(--border)] space-y-3">
+            <span className="text-sm font-bold text-[var(--ink)] block">
               {strings.capacityQuestion}
             </span>
             <div className="flex gap-4">
-              <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-[#1C1C1A]">
+              <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-[var(--ink)]">
                 <input
                   type="radio"
                   name="capacity"
                   checked={lacksCapacity}
                   onChange={() => setLacksCapacity(true)}
-                  className="w-5 h-5 accent-[#1B3B36]"
+                  className="w-5 h-5 accent-[var(--primary)]"
                 />
                 Yes (Guardian Consent Path)
               </label>
-              <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-[#1C1C1A]">
+              <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-[var(--ink)]">
                 <input
                   type="radio"
                   name="capacity"
                   checked={!lacksCapacity}
                   onChange={() => setLacksCapacity(false)}
-                  className="w-5 h-5 accent-[#1B3B36]"
+                  className="w-5 h-5 accent-[var(--primary)]"
                 />
                 No (Assisted Self-Consent)
               </label>
@@ -265,7 +267,7 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
 
           <div className="space-y-3">
             <div>
-              <label htmlFor="guardian-rel" className="block text-sm font-semibold text-[#1C1C1A] mb-1">
+              <label htmlFor="guardian-rel" className="block text-sm font-semibold text-[var(--ink)] mb-1">
                 {strings.relationshipPlaceholder}
               </label>
               <input
@@ -274,13 +276,13 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
                 placeholder="e.g., Daughter"
                 value={guardianRelationship}
                 onChange={(e) => setGuardianRelationship(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-[#D1CEC4] focus:border-[#1B3B36] text-base outline-hidden"
+                className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] focus:border-[var(--primary)] text-base outline-hidden"
                 style={{ minHeight: "48px" }}
               />
             </div>
 
             <div>
-              <label htmlFor="guardian-note" className="block text-sm font-semibold text-[#1C1C1A] mb-1">
+              <label htmlFor="guardian-note" className="block text-sm font-semibold text-[var(--ink)] mb-1">
                 {strings.notePlaceholder}
               </label>
               <input
@@ -289,20 +291,20 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
                 placeholder="e.g., Primary caregiver living at home"
                 value={guardianNote}
                 onChange={(e) => setGuardianNote(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-[#D1CEC4] focus:border-[#1B3B36] text-base outline-hidden"
+                className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] focus:border-[var(--primary)] text-base outline-hidden"
                 style={{ minHeight: "48px" }}
               />
             </div>
 
-            <label className="flex items-start gap-3 cursor-pointer p-2 rounded-xl hover:bg-[#F8F6F0]">
+            <label className="flex items-start gap-3 cursor-pointer p-2 rounded-xl hover:bg-[var(--bg)]">
               <input
                 type="checkbox"
                 id="guardian-declaration"
                 checked={guardianDeclared}
                 onChange={(e) => setGuardianDeclared(e.target.checked)}
-                className="w-6 h-6 mt-0.5 rounded accent-[#1B3B36] shrink-0 cursor-pointer"
+                className="w-6 h-6 mt-0.5 rounded accent-[var(--primary)] shrink-0 cursor-pointer"
               />
-              <span className="text-sm font-medium text-[#1C1C1A]">
+              <span className="text-sm font-medium text-[var(--ink)]">
                 {strings.guardianDeclaration}
               </span>
             </label>
@@ -314,15 +316,15 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
       {step === 5 && (
         <div className="space-y-4">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-[#1C1C1A]">{strings.firstMemoryTitle}</h2>
-            <p className="text-sm text-[#52504C]">
+            <h2 className="text-2xl font-bold text-[var(--ink)]">{strings.firstMemoryTitle}</h2>
+            <p className="text-sm text-[var(--ink-soft)]">
               Add a favorite memory, family milestone, or traditional festival to personalize reminiscence activities.
             </p>
           </div>
 
           <div className="space-y-3">
             <div>
-              <label htmlFor="memory-title" className="block text-sm font-semibold text-[#1C1C1A] mb-1">
+              <label htmlFor="memory-title" className="block text-sm font-semibold text-[var(--ink)] mb-1">
                 {strings.memoryCaption}
               </label>
               <input
@@ -331,12 +333,13 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
                 placeholder={strings.memoryCaptionPlaceholder}
                 value={firstMemoryTitle}
                 onChange={(e) => setFirstMemoryTitle(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-[#1B3B36] text-base outline-hidden"
+                className="w-full px-4 py-3 rounded-xl border-2 border-[var(--primary)] text-base outline-hidden"
                 style={{ minHeight: "48px" }}
               />
             </div>
-            <div className="p-4 rounded-2xl bg-[#F8F6F0] border border-[#D1CEC4] text-xs text-[#52504C]">
-              💡 You can upload photos, voice stories, and favorite songs later from the Memories tab.
+            <div className="p-4 rounded-2xl bg-[var(--bg)] border border-[var(--border)] text-xs text-[var(--ink-soft)] flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-[var(--accent)] shrink-0" />
+              <span>You can upload photos, voice stories, and favorite songs later from the Memories tab.</span>
             </div>
           </div>
         </div>
@@ -345,17 +348,17 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
       {/* STEP 6: Calibration Hand-Off */}
       {step === 6 && (
         <div className="space-y-5 text-center">
-          <div className="w-16 h-16 mx-auto rounded-full bg-[#EAF3EE] flex items-center justify-center text-3xl border-2 border-[#2D6A4F]" aria-hidden="true">
-            🌱
+          <div className="w-16 h-16 mx-auto rounded-full bg-[var(--primary-light)] flex items-center justify-center text-3xl border-2 border-[var(--primary)]" aria-hidden="true">
+            <Sprout className="w-8 h-8 text-[var(--primary)]" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-[#1B3B36]">{strings.calibrationTitle}</h2>
-            <p className="text-sm text-[#52504C] leading-relaxed max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-[var(--primary)]">{strings.calibrationTitle}</h2>
+            <p className="text-sm text-[var(--ink-soft)] leading-relaxed max-w-md mx-auto">
               {strings.calibrationDesc}
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#F8F6F0] border border-[#D1CEC4] text-left text-xs text-[#1C1C1A] space-y-1.5">
+          <div className="p-4 rounded-2xl bg-[var(--bg)] border border-[var(--border)] text-left text-xs text-[var(--ink)] space-y-1.5">
             <div><strong>Elder:</strong> {elderName || "Elder"}</div>
             <div><strong>Caregiver:</strong> {caregiverName} ({guardianRelationship || "Guardian"})</div>
             <div><strong>Language:</strong> {locale.toUpperCase()}</div>
@@ -365,7 +368,7 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
           <div className="pt-2">
             <Link
               href="/play"
-              className="inline-flex items-center justify-center w-full px-6 py-4 rounded-2xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white font-bold text-lg shadow-sm transition-colors no-underline"
+              className="inline-flex items-center justify-center w-full px-6 py-4 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white font-bold text-lg shadow-sm transition-colors no-underline"
               style={{ minHeight: "64px" }}
             >
               {strings.startCalibrationBtn}
@@ -376,11 +379,11 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
 
       {/* Navigation Buttons for Steps 1-5 */}
       {step < 6 && (
-        <div className="flex items-center justify-between pt-4 border-t border-[#D1CEC4]">
+        <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
           <button
             type="button"
             onClick={handleBack}
-            className="px-5 py-3 rounded-xl border-2 border-[#D1CEC4] text-sm font-semibold text-[#52504C] hover:bg-[#F2EFE9] transition-colors"
+            className="px-5 py-3 rounded-xl border-2 border-[var(--border)] text-sm font-semibold text-[var(--ink-soft)] hover:bg-[var(--surface-hover)] transition-colors"
             style={{ minHeight: "48px" }}
           >
             {strings.backBtn}
@@ -389,7 +392,7 @@ export function OnboardingWizard({ onComplete, onCancel }: OnboardingWizardProps
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className="px-6 py-3 rounded-xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-sm font-bold shadow-sm transition-colors disabled:opacity-50"
+            className="px-6 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white text-sm font-bold shadow-sm transition-colors disabled:opacity-50"
             style={{ minHeight: "48px" }}
           >
             {isSubmitting ? "Saving..." : strings.continueBtn}

@@ -184,6 +184,6 @@ New libraries (for example `three`, `@react-three/fiber`, `@react-three/drei`, `
 
 ### 9.11 Approval
 
-Approved by: ____________________  Date: ____________
+Approved by: owner, 2026-10-04
 
 Applies to: B27, B28, B29, B30. Review again before the final demo (B26).

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { AlertTriangle, Eye, Check, ArrowLeft, ArrowRight, Download, FileText } from "lucide-react";
 import { Link } from "@/i18n/routing";
 
 import {
@@ -47,23 +48,23 @@ export default function AshaDashboardPage() {
   const getStatusChip = (status: AshaPatient["status"], label: string) => {
     if (status === "checkin_suggested") {
       return (
-        <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1] inline-flex items-center gap-1.5">
-          <span aria-hidden="true">⚠️</span>
+        <span className="px-3 py-1 text-xs font-bold rounded-full bg-[var(--alert-light)] text-[var(--alert)] border border-[var(--alert)] inline-flex items-center gap-1.5">
+          <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
           <span>{label}</span>
         </span>
       );
     }
     if (status === "watch") {
       return (
-        <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#FFF8E7] text-[#7A5800] border border-[#E0D0A0] inline-flex items-center gap-1.5">
-          <span aria-hidden="true">👁️</span>
+        <span className="px-3 py-1 text-xs font-bold rounded-full bg-[var(--accent-light)] text-[var(--accent-dark)] border border-[var(--accent)] inline-flex items-center gap-1.5">
+          <Eye className="w-3.5 h-3.5" aria-hidden="true" />
           <span>{label}</span>
         </span>
       );
     }
     return (
-      <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#EAF3EE] text-[#2D6A4F] border border-[#A7D1B9] inline-flex items-center gap-1.5">
-        <span aria-hidden="true">✓</span>
+      <span className="px-3 py-1 text-xs font-bold rounded-full bg-[var(--primary-light)] text-[var(--primary-dark)] border border-[var(--border)] inline-flex items-center gap-1.5">
+        <Check className="w-3.5 h-3.5" aria-hidden="true" />
         <span>{label}</span>
       </span>
     );
@@ -77,24 +78,24 @@ export default function AshaDashboardPage() {
           <button
             type="button"
             onClick={() => setSelectedPatientId(null)}
-            className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl cursor-pointer"
+            className="inline-flex items-center gap-2 text-base font-semibold text-[var(--primary)] p-2 hover:bg-[var(--surface-hover)] rounded-xl cursor-pointer"
             style={{ minHeight: "44px" }}
           >
-            <span aria-hidden="true">⬅️</span>
+            <ArrowLeft className="w-4 h-4" />
             <span>Back to Assigned Households</span>
           </button>
         ) : (
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl no-underline"
+            className="inline-flex items-center gap-2 text-base font-semibold text-[var(--primary)] p-2 hover:bg-[var(--surface-hover)] rounded-xl no-underline"
             style={{ minHeight: "44px" }}
           >
-            <span aria-hidden="true">⬅️</span>
+            <ArrowLeft className="w-4 h-4" />
             <span>{tCommon("back")}</span>
           </Link>
         )}
 
-        <span className="text-sm font-semibold text-[#2D6A4F] bg-[#EAF3EE] px-3 py-1.5 rounded-full border border-[#A7D1B9]">
+        <span className="text-sm font-semibold text-[var(--primary-dark)] bg-[var(--primary-light)] px-3 py-1.5 rounded-full border border-[var(--border)]">
           ASHA Portal • Sector 4
         </span>
       </div>
@@ -103,9 +104,9 @@ export default function AshaDashboardPage() {
         <div
           role="status"
           aria-live="polite"
-          className="bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9] px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-xs"
+          className="bg-[var(--primary-light)] text-[var(--primary)] border border-[var(--border)] px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-xs"
         >
-          <span aria-hidden="true">📄</span>
+          <FileText className="w-4 h-4" aria-hidden="true" />
           <span>{exportNotice}</span>
         </div>
       )}
@@ -114,19 +115,19 @@ export default function AshaDashboardPage() {
       {selectedPatient ? (
         <div className="space-y-6" role="region" aria-label="Elder Clinical Detail">
           {/* Header Card */}
-          <div className="bg-white rounded-3xl p-6 border-2 border-[#1B3B36] shadow-xs space-y-4">
+          <div className="bg-white rounded-3xl p-6 border-2 border-[var(--primary)] shadow-xs space-y-4">
             <div className="flex items-start justify-between flex-wrap gap-2">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1]">
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[var(--alert-light)] text-[var(--alert)] border border-[var(--alert)]">
                     [DEMO / SYNTHETIC DATA]
                   </span>
                   {getStatusChip(selectedPatient.status, selectedPatient.statusLabel)}
                 </div>
-                <h2 className="text-2xl font-bold text-[#1C1C1A]">
+                <h2 className="text-2xl font-bold text-[var(--ink)]">
                   {selectedPatient.name}
                 </h2>
-                <p className="text-sm text-[#52504C]">
+                <p className="text-sm text-[var(--ink-soft)]">
                   {selectedPatient.location} • Preferred Language: {selectedPatient.preferredLanguage}
                 </p>
               </div>
@@ -136,59 +137,59 @@ export default function AshaDashboardPage() {
                 type="button"
                 id="export-pdf-detail-btn"
                 onClick={() => handleExportPdf(selectedPatient)}
-                className="px-4 py-2.5 rounded-xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-2"
                 style={{ minHeight: "44px" }}
               >
-                <span aria-hidden="true">📥</span>
+                <Download className="w-4 h-4" />
                 <span>Download Report (PDF)</span>
               </button>
             </div>
 
             {/* Household Guardian Info */}
-            <div className="p-4 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4] text-xs space-y-1">
-              <span className="font-bold text-[#1C1C1A] block uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-[var(--bg)] border border-[var(--border)] text-xs space-y-1">
+              <span className="font-bold text-[var(--ink)] block uppercase tracking-wider">
                 Primary Caregiver Contact
               </span>
-              <p className="text-[#52504C]">
+              <p className="text-[var(--ink-soft)]">
                 Guardian: <strong>{selectedPatient.guardianName}</strong> ({selectedPatient.guardianRel})
               </p>
-              <p className="text-[#52504C]">
+              <p className="text-[var(--ink-soft)]">
                 Consent: Active verifiable guardian consent registered under DPDP Act 2023.
               </p>
             </div>
           </div>
 
           {/* Explainable Statistical Evidence */}
-          <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs space-y-4">
-            <h3 className="text-lg font-bold text-[#1C1C1A]">
+          <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-xs space-y-4">
+            <h3 className="text-lg font-bold text-[var(--ink)]">
               Explainable Anomaly Evidence
             </h3>
-            <p className="text-xs text-[#52504C]">
+            <p className="text-xs text-[var(--ink-soft)]">
               Objective numbers comparing current session against the 14-day rolling baseline.
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center sm:text-left">
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Observed Score</span>
-                <span className="text-lg font-bold text-[#9A3412]">
+              <div className="p-3 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
+                <span className="text-[11px] text-[var(--ink-soft)] block">Observed Score</span>
+                <span className="text-lg font-bold text-[var(--alert)]">
                   {Math.round(selectedPatient.currentScore * 100)}%
                 </span>
               </div>
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Baseline Median</span>
-                <span className="text-lg font-bold text-[#1B3B36]">
+              <div className="p-3 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
+                <span className="text-[11px] text-[var(--ink-soft)] block">Baseline Median</span>
+                <span className="text-lg font-bold text-[var(--primary)]">
                   {Math.round(selectedPatient.baselineMedian * 100)}%
                 </span>
               </div>
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Robust Z-Score</span>
-                <span className="text-lg font-bold text-[#9A3412]">
+              <div className="p-3 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
+                <span className="text-[11px] text-[var(--ink-soft)] block">Robust Z-Score</span>
+                <span className="text-lg font-bold text-[var(--alert)]">
                   {selectedPatient.robustZ}
                 </span>
               </div>
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Sessions This Week</span>
-                <span className="text-lg font-bold text-[#1C1C1A]">
+              <div className="p-3 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
+                <span className="text-[11px] text-[var(--ink-soft)] block">Sessions This Week</span>
+                <span className="text-lg font-bold text-[var(--ink)]">
                   {selectedPatient.sessionsThisWeek}
                 </span>
               </div>
@@ -196,25 +197,25 @@ export default function AshaDashboardPage() {
 
             {/* Domains Breakdown */}
             <div className="space-y-2 pt-2">
-              <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">
+              <span className="text-xs font-bold text-[var(--ink-soft)] block uppercase tracking-wider">
                 Recent Domain Activity
               </span>
               <div className="space-y-2">
                 {selectedPatient.domains.map((d) => (
                   <div
                     key={d.name}
-                    className="p-3 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4] flex items-center justify-between text-xs"
+                    className="p-3 rounded-xl bg-[var(--bg)] border border-[var(--border)] flex items-center justify-between text-xs"
                   >
-                    <span className="font-semibold text-[#1C1C1A]">{d.name}</span>
-                    <span className="font-bold text-[#1B3B36]">{Math.round(d.score * 100)}%</span>
+                    <span className="font-semibold text-[var(--ink)]">{d.name}</span>
+                    <span className="font-bold text-[var(--primary)]">{Math.round(d.score * 100)}%</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Clinical Advisory */}
-            <div className="p-4 rounded-xl bg-[#FAF8F5] border-2 border-[#D1CEC4] text-xs text-[#52504C] space-y-1">
-              <span className="font-bold text-[#1C1C1A] block">Non-Diagnostic Guidance:</span>
+            <div className="p-4 rounded-xl bg-[var(--surface-2)] border-2 border-[var(--border)] text-xs text-[var(--ink-soft)] space-y-1">
+              <span className="font-bold text-[var(--ink)] block">Non-Diagnostic Guidance:</span>
               <p>
                 Memora is an offline cognitive stimulation platform and not a medical device. Variations in scores occur due to temporary tiredness, poor sleep, or mild illness. Consider a check-up with a doctor if this pattern continues.
               </p>
@@ -228,8 +229,8 @@ export default function AshaDashboardPage() {
                 onClick={() => toggleVisitScheduled(selectedPatient.id)}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                   scheduledVisits[selectedPatient.id]
-                    ? "bg-[#EAF3EE] text-[#1B3B36] border-[#A7D1B9]"
-                    : "bg-[#1B3B36] text-white border-[#1B3B36]"
+                    ? "bg-[var(--primary-light)] text-[var(--primary)] border-[var(--border)]"
+                    : "bg-[var(--primary)] text-white border-[var(--primary)]"
                 }`}
                 style={{ minHeight: "44px" }}
               >
@@ -243,25 +244,25 @@ export default function AshaDashboardPage() {
       ) : (
         /* VIEW 2: PATIENT LIST SCREEN (ORDERED BY TRIAGE NEED) */
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-[#1C1C1A]">
+              <h2 className="text-2xl font-bold text-[var(--ink)]">
                 {t("title")}
               </h2>
-              <p className="text-sm text-[#52504C] mt-1">
+              <p className="text-sm text-[var(--ink-soft)] mt-1">
                 3 assigned households in Primary Health Centre sector. Ordered by triage priority.
               </p>
             </div>
 
-            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1] self-start md:self-auto">
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[var(--alert-light)] text-[var(--alert)] border border-[var(--alert)] self-start md:self-auto">
               [DEMO / SYNTHETIC DATA]
             </span>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-lg font-bold text-[#1C1C1A]">Assigned Elders ({patients.length})</h3>
-              <span className="text-xs font-semibold text-[#52504C]">
+              <h3 className="text-lg font-bold text-[var(--ink)]">Assigned Elders ({patients.length})</h3>
+              <span className="text-xs font-semibold text-[var(--ink-soft)]">
                 Priority order: Urgent Check-in ➔ Watch ➔ Steady
               </span>
             </div>
@@ -270,22 +271,22 @@ export default function AshaDashboardPage() {
               {patients.map((elder) => (
                 <div
                   key={elder.id}
-                  className="p-5 bg-white rounded-2xl border-2 border-[#D1CEC4] hover:border-[#1B3B36] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
+                  className="p-5 bg-white rounded-2xl border-2 border-[var(--border)] hover:border-[var(--primary)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
                   role="listitem"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-bold text-[#52504C] bg-[#F8F6F0] px-2 py-0.5 rounded-md border border-[#D1CEC4]">
+                      <span className="text-xs font-bold text-[var(--ink-soft)] bg-[var(--bg)] px-2 py-0.5 rounded-md border border-[var(--border)]">
                         Priority {elder.triagePriority}
                       </span>
                       {getStatusChip(elder.status, elder.statusLabel)}
                     </div>
 
-                    <h4 className="text-lg font-bold text-[#1C1C1A]">{elder.name}</h4>
-                    <p className="text-xs text-[#52504C]">
+                    <h4 className="text-lg font-bold text-[var(--ink)]">{elder.name}</h4>
+                    <p className="text-xs text-[var(--ink-soft)]">
                       {elder.location} • Guardian: {elder.guardianName} ({elder.guardianRel})
                     </p>
-                    <span className="text-[11px] text-[#52504C] block mt-1">
+                    <span className="text-[11px] text-[var(--ink-soft)] block mt-1">
                       Last active: {elder.lastActive} • {elder.sessionsThisWeek} sessions this week
                     </span>
                   </div>
@@ -296,11 +297,11 @@ export default function AshaDashboardPage() {
                       type="button"
                       id={`export-pdf-${elder.id}`}
                       onClick={() => handleExportPdf(elder)}
-                      className="px-3 py-2 rounded-xl border border-[#D1CEC4] hover:bg-[#F2EFE9] text-xs font-bold text-[#1C1C1A] transition-colors flex items-center gap-1.5"
+                      className="px-3 py-2 rounded-xl border border-[var(--border)] hover:bg-[var(--surface-hover)] text-xs font-bold text-[var(--ink)] transition-colors flex items-center gap-1.5"
                       style={{ minHeight: "40px" }}
                       aria-label={`Download PDF report for ${elder.name}`}
                     >
-                      <span aria-hidden="true">📥</span>
+                      <Download className="w-3.5 h-3.5" />
                       <span>PDF</span>
                     </button>
 
@@ -309,10 +310,11 @@ export default function AshaDashboardPage() {
                       type="button"
                       id={`view-detail-${elder.id}`}
                       onClick={() => setSelectedPatientId(elder.id)}
-                      className="px-4 py-2 rounded-xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-xs font-bold shadow-xs transition-colors"
+                      className="px-4 py-2 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white text-xs font-bold shadow-xs transition-colors inline-flex items-center gap-1.5"
                       style={{ minHeight: "40px" }}
                     >
-                      View Details ➔
+                      <span>View Details</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
