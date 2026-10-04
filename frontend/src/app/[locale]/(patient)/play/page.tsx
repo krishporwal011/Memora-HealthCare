@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { ArrowLeft, PhoneCall } from "lucide-react";
 import { BigButton } from "@/components/patient/BigButton";
 import { DayHeader } from "@/components/patient/DayHeader";
+import { FamilyCallBar } from "@/components/patient/FamilyCallBar";
 import { SyncStatusChip } from "@/components/common/SyncStatusChip";
 import { recordGameEventOffline, generateUUIDv7 } from "@/lib/offline";
 import {
@@ -228,22 +230,43 @@ export default function PatientPlayPage() {
 
   return (
     <div
-      className="flex-1 flex flex-col gap-5 max-w-lg mx-auto w-full px-4 py-5"
+      className="flex-1 flex flex-col gap-6 max-w-3xl mx-auto w-full px-4 py-5"
     >
       {/* Day Header — always visible for orientation */}
       <DayHeader locale={locale} />
 
-      {/* Top row: date chip + sync status */}
-      <div className="flex items-center justify-between gap-2">
+      {/* Top row: Home button + Sync status + Call Family button (visible on every screen) */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-base font-semibold p-2 rounded-xl no-underline transition-colors"
-          style={{ color: "var(--primary)", minHeight: "48px" }}
+          className="inline-flex items-center gap-2 text-base md:text-lg font-bold px-4 py-2.5 rounded-full border no-underline transition-all active:scale-95 shadow-xs"
+          style={{
+            background: "var(--surface)",
+            borderColor: "var(--border)",
+            color: "var(--primary)",
+            minHeight: "56px",
+          }}
+          aria-label="Return to home screen"
         >
-          <span aria-hidden="true">←</span>
+          <ArrowLeft size={22} aria-hidden="true" />
           <span>{tCommon("back")}</span>
         </Link>
-        <SyncStatusChip />
+
+        <div className="flex items-center gap-3">
+          <SyncStatusChip />
+          <a
+            href="tel:+919876543210"
+            className="inline-flex items-center gap-2 text-base font-bold px-5 py-2.5 rounded-full text-white no-underline shadow-sm transition-transform active:scale-95 cursor-pointer"
+            style={{
+              background: "var(--accent)",
+              minHeight: "56px",
+            }}
+            aria-label="Call family member now"
+          >
+            <PhoneCall size={20} aria-hidden="true" />
+            <span>Call Family</span>
+          </a>
+        </div>
       </div>
 
       {/* 1. HOME SCREEN */}
@@ -251,7 +274,7 @@ export default function PatientPlayPage() {
         <div className="flex-1 flex flex-col justify-center gap-6">
           {/* Welcome card */}
           <div
-            className="rounded-[var(--radius-card)] p-6 text-center space-y-3"
+            className="rounded-[var(--radius-card)] p-6 md:p-8 text-center space-y-3"
             style={{
               background: "var(--surface)",
               border: "2.5px solid var(--primary)",
@@ -272,15 +295,15 @@ export default function PatientPlayPage() {
               {t("title")}
             </h2>
             <p
-              className="text-lg leading-relaxed"
+              className="text-lg md:text-xl leading-relaxed max-w-lg mx-auto"
               style={{ color: "var(--ink-soft)" }}
             >
               {t("matchGamePrompt")}
             </p>
           </div>
 
-          {/* CTAs */}
-          <div className="space-y-3">
+          {/* Primary Action Buttons */}
+          <div className="space-y-4">
             <BigButton
               label={t("startSession")}
               icon="▶"
@@ -295,6 +318,11 @@ export default function PatientPlayPage() {
               onClick={() => setScreenMode("photo_quiz")}
               aria-label="Play Family Photo Memories"
             />
+          </div>
+
+          {/* Speed Dial to Family (always 1 tap away) */}
+          <div className="pt-2">
+            <FamilyCallBar />
           </div>
         </div>
       )}
@@ -442,24 +470,6 @@ export default function PatientPlayPage() {
               border: "1px solid var(--border)",
             }}
           >
-            <div className="flex items-start gap-3">
-              <span className="text-2xl shrink-0" aria-hidden="true">📅</span>
-              <div>
-                <span
-                  className="text-xs font-bold block uppercase tracking-wider"
-                  style={{ color: "var(--ink-muted)" }}
-                >
-                  {t("todayIs")}
-                </span>
-                <span
-                  className="text-base font-bold block"
-                  style={{ color: "var(--ink)" }}
-                >
-                  {orientationData.todayDateFormatted}
-                </span>
-              </div>
-            </div>
-
             <div className="flex items-start gap-3">
               <span className="text-2xl shrink-0" aria-hidden="true">💊</span>
               <div>

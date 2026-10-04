@@ -70,7 +70,7 @@ export default function AshaDashboardPage() {
   };
 
   return (
-    <div className="flex-1 max-w-3xl mx-auto w-full py-4 space-y-6">
+    <div className="flex-1 max-w-6xl mx-auto w-full px-4 py-4 space-y-6">
       {/* Top Banner Navigation */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         {selectedPatient ? (

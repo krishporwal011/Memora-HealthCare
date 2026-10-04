@@ -41,7 +41,7 @@ export function DayHeader({ patientName, locale = "en" }: DayHeaderProps) {
 
   return (
     <div
-      className="rounded-[var(--radius-card)] p-5 space-y-1"
+      className="rounded-[var(--radius-card)] py-3 px-4 md:px-5 space-y-0.5 shadow-xs"
       style={{ background: "var(--primary-light)", border: "1.5px solid var(--primary)" }}
     >
       <p

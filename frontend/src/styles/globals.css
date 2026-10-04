@@ -1,5 +1,67 @@
-/* ── Google Fonts: Atkinson Hyperlegible + NER script support ── */
-@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Meetei+Mayek:wght@400;700&display=swap");
+/* ── Self-Hosted Fonts: 100% Offline (Zero external CDN) ── */
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/atkinson-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/atkinson-bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans Devanagari";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/noto-devanagari-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans Devanagari";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/noto-devanagari-bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans Bengali";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/noto-bengali-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans Bengali";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/noto-bengali-bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans Meetei Mayek";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/noto-meetei-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans Meetei Mayek";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/noto-meetei-bold.woff2") format("woff2");
+}
 
 @import "tailwindcss";
 @import "./tokens.css";

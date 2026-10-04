@@ -74,7 +74,7 @@ export default function CaregiverDashboardPage() {
 
   return (
     <div
-      className="flex-1 max-w-3xl mx-auto w-full px-4 py-5 space-y-6"
+      className="flex-1 max-w-6xl mx-auto w-full px-4 py-5 space-y-6"
     >
       {/* ── Top Navigation Bar ── */}
       <div className="flex items-center justify-between flex-wrap gap-2">

@@ -106,3 +106,84 @@ Change only what the brief asks; refine existing screens rather than redesigning
 9. A11y pass and demo polish
 
 Validate with 2-3 real caregivers or elders if possible before the demo; it is the strongest point for judges.
+
+---
+
+## 9. Amendment A1: Showcase layer and cinematic motion
+
+> Status: PROPOSED until signed below. Applies to briefs B27 to B30 only.
+> Where this section conflicts with section 2 (Motion) or AGENTS.md rule 13, this section wins for SHOWCASE routes. It never overrides anything on PATIENT routes.
+
+### 9.1 Why
+The patient experience must stay calm and predictable. The landing page, caregiver and ASHA screens, and a memory gallery are where judges, families and field workers form their first impression. Those screens may use richer motion, inspired by editorial 3D gallery sites, as long as the patient layer is untouched and every effect can be switched off.
+
+### 9.2 Two layers
+
+| Layer | Routes | Rule set |
+|---|---|---|
+| PATIENT | `/[locale]/play`, `components/patient/*` | Sections 1 to 6 unchanged. Fades 150 to 250ms only. No 3D, parallax, custom cursor, text scramble or auto-moving content. |
+| SHOWCASE | `/[locale]` (landing), `/[locale]/care`, `/[locale]/asha`, `/[locale]/house` (new) | Section 9.3 allowed effects, with the safeguards in 9.5 to 9.8. |
+
+A component must never be imported from a SHOWCASE route into a PATIENT route if it contains showcase motion. Keep showcase motion in `components/showcase/*`.
+
+### 9.3 Allowed on SHOWCASE routes
+- Entry choice: **Gallery** (cinematic) or **Album** (static editorial). The choice is remembered.
+- Loader with a drawn "memory loop" mark and a circular Start button that follows the cursor (fine pointer only).
+- Scroll-driven story chapters, smooth scroll (disabled in Calm mode).
+- Heading text-reveal or scramble-to-readable: once per heading, at most 800ms, headings only, never body text.
+- Full-screen menu: large links, current page struck through, large Close button.
+- Page transitions up to 600ms, fade through the warm-dark surface.
+- Custom cursor with context labels ("Open", "Play"). Desktop fine pointer only.
+- Corner HUD: language, Calm mode, Gallery/Album toggle.
+- WebGL "memory house" on `/[locale]/house` only (brief B30).
+- Staggered list reveal, zoom-into-detail transitions.
+
+### 9.4 Still forbidden everywhere
+Auto-advancing carousels, countdowns or visible timers, streaks, scores shown to the patient, flashing or strobing (nothing above 3 flashes per second), sound that starts by itself, autoplaying video, any effect that moves content the user is currently reading.
+
+### 9.5 Calm mode (global kill switch)
+- A visible **Calm mode** toggle (icon plus text label, at least 48px) on every SHOWCASE screen, persisted with Zustand `persist`.
+- Calm mode OR `prefers-reduced-motion: reduce` disables: 3D, parallax, smooth scroll, custom cursor, scramble, long transitions, staggered reveals. It shows the static Album layout with identical content.
+- Calm mode defaults to ON when `prefers-reduced-motion` is set, `navigator.connection.saveData` is true, or `navigator.deviceMemory` is 4 or less.
+
+### 9.6 Gallery theme: existing tokens only
+No new colours. The dark gallery surface is built from current tokens:
+
+| Role | Token |
+|---|---|
+| Background | `var(--ink)` |
+| Text | `var(--bg)` |
+| Lines, wireframes | `var(--primary-light)` at reduced opacity |
+| Highlights, active state | `var(--accent)` |
+| Focus ring | `var(--focus)` (3px, unchanged) |
+
+Body text on the gallery surface must reach 7:1 contrast. Body copy is at least 18px. Monospace may be used for small labels only, never for instructions or key content. Light (Album) and dark (Gallery) surfaces both use Atkinson Hyperlegible plus the Noto script fonts.
+
+### 9.7 Interaction and accessibility
+- Every gesture (scroll, drag, hover) has a visible button alternative of at least 48px (56px for camera controls). Nothing is discoverable by gesture alone.
+- Full keyboard path; visible focus; correct `lang` per locale.
+- Role cards (Patient, Caregiver, ASHA) stay reachable without scrolling through the story: a persistent "Choose role" button and a skip link.
+- Screen-reader text for every animated heading (the final text is in the DOM from the start).
+- All strings come from i18n files. No hardcoded user-facing text.
+
+### 9.8 Performance and offline
+- 3D and heavy animation libraries load lazily and never enter the shared bundle.
+- Cap `devicePixelRatio` at 2. Target 60fps on a mid-range Android; fall back to Album automatically if WebGL is missing or FPS stays under 40 for 2 seconds.
+- Every font, model and texture is bundled and precached by the service worker. No CDN or external font host at runtime.
+- The Lighthouse shell budget from B26 must not regress. Report route chunk sizes in every AGENT REPORT.
+
+### 9.9 Content rules (unchanged, restated)
+- Keep required labels: synthetic-data label, "Lawyer review pending", DPDP consent badge, non-diagnostic disclaimer. Restyle them; never hide them.
+- Evidence stays (AGENTS.md rule 7): show a plain-language summary first, with the triggering numbers under a **Show the numbers** disclosure.
+- Banned words (rule 01) apply to all user-facing text, including metadata and manifest.
+- Only `is_approved` memories appear in any gallery or house view.
+- Reference sites inspire the language of the interaction. Copy no code, assets, text or imagery.
+
+### 9.10 Dependencies
+New libraries (for example `three`, `@react-three/fiber`, `@react-three/drei`, `lucide-react`, a motion library) require: a refreshed `docs/research/R7` note, human approval, and a decision-log row before install (rule 11 and GEMINI.md).
+
+### 9.11 Approval
+
+Approved by: ____________________  Date: ____________
+
+Applies to: B27, B28, B29, B30. Review again before the final demo (B26).

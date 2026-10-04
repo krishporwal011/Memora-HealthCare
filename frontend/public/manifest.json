@@ -1,11 +1,11 @@
 {
   "name": "Memora",
   "short_name": "Memora",
-  "description": "Cognitive stimulation and memory assistance platform for elderly individuals in North East India",
+  "description": "Cognitive stimulation and memory companion platform for elderly individuals in North East India",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F8F6F0",
-  "theme_color": "#1B3B36",
+  "background_color": "#F9F6F0",
+  "theme_color": "#2F6F6B",
   "orientation": "portrait-primary",
   "icons": [
     {

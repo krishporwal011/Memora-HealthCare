@@ -41,19 +41,19 @@ export default async function LocaleLayout({
             {children}
           </main>
           <footer
-            className="mt-auto py-5 px-4 text-center text-xs"
+            className="mt-auto py-3 px-4 text-center text-xs"
             style={{
               background: "var(--surface-2)",
-              borderTop: "1px solid var(--border)",
+              borderTop: "1px solid var(--border-soft)",
               color: "var(--ink-muted)",
             }}
           >
-            <div className="max-w-3xl mx-auto space-y-1">
-              <p className="font-bold text-sm" style={{ color: "var(--ink-soft)" }}>
-                Memora · Smart India Hackathon 2026 (SIH26003)
+            <div className="max-w-4xl mx-auto space-y-0.5">
+              <p className="font-bold text-xs" style={{ color: "var(--ink-soft)" }}>
+                Memora · North East India
               </p>
-              <p>
-                Non-diagnostic cognitive stimulation and caregiver assistance platform.{" "}
+              <p className="text-[11px] leading-tight">
+                Non-diagnostic cognitive stimulation and caregiver assistance platform.
                 Consult a healthcare professional for clinical advice.
               </p>
             </div>

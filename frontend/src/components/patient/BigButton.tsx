@@ -15,17 +15,38 @@ export function BigButton({
   className = "",
   ...props
 }: BigButtonProps) {
-  const variantStyles = {
-    primary: "bg-[#1B3B36] text-white border-[#1B3B36] hover:bg-[#122824]",
-    accent: "bg-[#C85A32] text-white border-[#C85A32] hover:bg-[#A64522]",
-    surface: "bg-white text-[#1C1C1A] border-[#D1CEC4] hover:bg-[#F2EFE9]",
+  const getVariantStyles = () => {
+    switch (variant) {
+      case "accent":
+        return {
+          background: "var(--accent)",
+          color: "var(--accent-ink)",
+          borderColor: "var(--accent-dark)",
+        };
+      case "surface":
+        return {
+          background: "var(--surface)",
+          color: "var(--ink)",
+          borderColor: "var(--border)",
+        };
+      case "primary":
+      default:
+        return {
+          background: "var(--primary)",
+          color: "var(--primary-ink)",
+          borderColor: "var(--primary-dark)",
+        };
+    }
   };
 
   return (
     <button
       type="button"
-      className={`btn-patient w-full flex items-center justify-center gap-4 text-xl font-bold rounded-2xl shadow-sm border-2 ${variantStyles[variant]} ${className}`}
-      style={{ minHeight: "64px" }}
+      className={`btn-patient w-full flex items-center justify-center gap-4 text-xl font-bold rounded-[var(--radius-md)] shadow-sm border-2 transition-transform active:scale-95 ${className}`}
+      style={{
+        minHeight: "var(--touch-target-patient)",
+        ...getVariantStyles(),
+      }}
       {...props}
     >
       {icon && (
