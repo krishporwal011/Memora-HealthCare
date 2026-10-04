@@ -1,6 +1,7 @@
 {
   "Common": {
     "appName": "Memora",
+    "eventBadge": "SIH 2026 · NER",
     "offlineNotice": "Working offline. Your activities are safely saved on this device.",
     "onlineNotice": "Connected to network.",
     "back": "Back",
@@ -8,7 +9,24 @@
     "continue": "Continue",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "disclaimer": "Memora is a cognitive stimulation platform, not a medical device. For medical questions, consult a doctor."
+    "close": "Close",
+    "menu": "Menu",
+    "language": "Language",
+    "calmMode": "Calm Mode",
+    "calmModeOn": "Calm Mode On",
+    "calmModeOff": "Calm Mode Off",
+    "galleryMode": "Gallery",
+    "albumMode": "Album",
+    "home": "Home",
+    "callFamily": "Call family",
+    "skip": "Skip",
+    "listen": "Listen",
+    "showNumbers": "Show the numbers",
+    "hideNumbers": "Hide numbers",
+    "sync": "Offline & Sync",
+    "settings": "Settings",
+    "privacy": "Privacy & Consent",
+    "disclaimer": "Memora is a cognitive stimulation and memory companion platform, not a medical device. For health questions, consider consulting a doctor."
   },
   "Roles": {
     "selectRole": "Select Your Role",
@@ -18,6 +36,26 @@
     "caregiverSubtitle": "Upload family memories and view activity trends",
     "ashaTitle": "Community Worker (ASHA)",
     "ashaSubtitle": "Assigned elder overview and check-in support"
+  },
+  "Landing": {
+    "tagline": "A gentle personal memory companion for the North East",
+    "heroDesc": "A calm, offline-first digital album designed for older adults to cherish family moments, stay cognitively active, and keep caregivers and health workers informed.",
+    "chooseRole": "Choose your role",
+    "startExploring": "Explore Memora",
+    "trust1": "100% Offline-First",
+    "trust1Desc": "Runs on any phone without continuous internet",
+    "trust2": "DPDP 2023 Guarded",
+    "trust2Desc": "Strict privacy and caregiver consent gating",
+    "trust3": "North East Roots",
+    "trust3Desc": "Local cultures, traditions, and languages",
+    "chapter1Title": "The Cognitive Journey",
+    "chapter1Body": "As memory changes over the years, familiar faces, songs, and stories provide comfort and clarity.",
+    "chapter2Title": "Personal Reminiscence",
+    "chapter2Body": "Every activity is crafted from your own family photo album, traditional songs, and cherished life events.",
+    "chapter3Title": "Three Caring Roles",
+    "chapter3Body": "A quiet space for elders, longitudinal trend insight for families, and triage support for ASHA community health workers.",
+    "chapter4Title": "Private and Sovereign",
+    "chapter4Body": "No biometric audio storage. No always-on sensors. Your personal memories remain on your device."
   },
   "Play": {
     "title": "Today's Activities",
@@ -30,10 +68,22 @@
     "whoIsHome": "Who is home today",
     "feedbackRight": "That is right.",
     "feedbackHere": "Here is the answer.",
-    "takeRest": "Well played. Let us rest for now."
+    "takeRest": "Well played. Let us rest for now.",
+    "greetingMorning": "Good morning",
+    "greetingAfternoon": "Good afternoon",
+    "greetingEvening": "Good evening",
+    "hintLeaves": "Look closely at the items with green leaves.",
+    "familyPhotosTitle": "Family Photo Memories",
+    "talkMemora": "Talk to Memora",
+    "memoryAlbum": "Memory Album",
+    "reminders": "Daily Routine",
+    "listenStory": "Listen to Story",
+    "reminderTaken": "I have taken this",
+    "reminderLater": "Remind me later"
   },
   "Care": {
     "title": "Caregiver Dashboard",
+    "portalTitle": "Caregiver Portal",
     "todayStatus": "Today's Activity",
     "sessionsPlayed": "Activities played today",
     "trendTitle": "14-Day Activity Trend",
@@ -41,7 +91,14 @@
     "uploadMemory": "Add a Memory",
     "approvalQueue": "Memory Questions Approval",
     "unwellToggle": "Mark as unwell today",
-    "unwellExplanation": "Temporarily pauses automatic change alerts"
+    "unwellExplanation": "Temporarily pauses automatic change alerts",
+    "timelineTitle": "Memory Timeline",
+    "peopleTitle": "Family & Friends",
+    "memoryBankTitle": "Family Memories Bank",
+    "weeklySummaryTitle": "Weekly Activity Summary",
+    "lawyerPending": "Lawyer review pending",
+    "dpdpBadge": "DPDP Act 2023 Guarded",
+    "alertConclusion": "Consider a check-up with a doctor."
   },
   "Asha": {
     "title": "ASHA Community Overview",
@@ -49,6 +106,13 @@
     "checkinSuggested": "Check-in suggested",
     "watch": "Keep observing",
     "steady": "Steady activity",
-    "exportReport": "Download Summary (PDF)"
+    "exportReport": "Download Summary (PDF)",
+    "sectorLabel": "ASHA Sector 4",
+    "assignedHouseholds": "Assigned Households",
+    "priorityOrder": "Priority order: Urgent Check-in ➔ Watch ➔ Steady",
+    "scheduleVisit": "Schedule Household Check-in",
+    "visitScheduled": "Household Check-in Scheduled",
+    "downloadPdf": "Download Report (PDF)",
+    "viewDetails": "View Details"
   }
 }

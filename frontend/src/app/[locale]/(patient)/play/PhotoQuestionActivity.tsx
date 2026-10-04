@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { BigButton } from "@/components/patient/BigButton";
+import React, { useState, useEffect, useRef } from "react";
+import { Camera, Check, ArrowRight, ArrowLeft } from "lucide-react";
+import { BigButton } from "@/components/ui/BigButton";
 import { recordGameEventOffline } from "@/lib/offline";
 import { syncAllUnsynced } from "@/lib/sync";
 import {
@@ -22,7 +23,7 @@ export const FALLBACK_APPROVED_QUESTIONS: QuizItem[] = [
     memory_id: "mem-01",
     question_text: "Who is receiving the phulam gamosa in the Tezpur photo?",
     photo_title: "Rongali Bihu (1985) in Tezpur",
-    image_url: "🌸",
+    image_url: "",
     options: [
       { id: "opt-1", text: "Grandmother", is_correct: true },
       { id: "opt-2", text: "Uncle Hemen", is_correct: false },
@@ -48,7 +49,6 @@ export function PhotoQuestionActivity({
   const turnStartTimeRef = useRef<number>(Date.now());
 
   useEffect(() => {
-    // Read offline approved questions strictly filtered to approved items
     const offlineItems = getOfflineApprovedQuizItems().filter(
       (q) => q.is_approved && q.approval_status === "approved"
     );
@@ -56,7 +56,6 @@ export function PhotoQuestionActivity({
     if (offlineItems.length > 0) {
       setQuestions(offlineItems);
     } else {
-      // Use standard pre-approved reminiscence fallback for synthetic demo
       setQuestions(FALLBACK_APPROVED_QUESTIONS);
     }
     turnStartTimeRef.current = Date.now();
@@ -71,7 +70,6 @@ export function PhotoQuestionActivity({
     setSelectedOptionId(optionId);
     const responseTimeMs = Date.now() - turnStartTimeRef.current;
 
-    // Adult non-patronizing feedback
     const correctOpt = currentQ.options.find((o) => o.is_correct);
     if (isCorrect) {
       setFeedback(`That is right: ${correctOpt?.text}.`);
@@ -79,7 +77,6 @@ export function PhotoQuestionActivity({
       setFeedback(`Here is the memory: ${correctOpt?.text}.`);
     }
 
-    // Record offline game event
     try {
       await recordGameEventOffline({
         patient_id: patientId,
@@ -90,7 +87,6 @@ export function PhotoQuestionActivity({
         correct: isCorrect,
         response_time_ms: responseTimeMs,
       });
-      // Opportunistic sync if online
       syncAllUnsynced().catch(() => {});
     } catch (e) {
       console.error("Failed to record photo question event offline", e);
@@ -111,13 +107,31 @@ export function PhotoQuestionActivity({
 
   if (!currentQ) {
     return (
-      <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] text-center space-y-4">
-        <span className="text-4xl block" aria-hidden="true">🖼️</span>
-        <h3 className="text-xl font-bold text-[#1B3B36]">No Photo Questions Available</h3>
-        <p className="text-sm text-[#52504C]">
+      <div
+        className="rounded-[var(--radius-card)] p-8 border-2 text-center space-y-4 max-w-lg mx-auto w-full shadow-md"
+        style={{
+          background: "var(--surface)",
+          borderColor: "var(--primary)",
+        }}
+      >
+        <div
+          className="w-16 h-16 mx-auto rounded-full flex items-center justify-center border"
+          style={{
+            background: "var(--primary-light)",
+            borderColor: "var(--primary)",
+            color: "var(--primary-dark)",
+          }}
+          aria-hidden="true"
+        >
+          <Camera size={28} />
+        </div>
+        <h3 className="text-2xl font-bold" style={{ color: "var(--primary)" }}>
+          No Photo Questions Available
+        </h3>
+        <p className="text-base" style={{ color: "var(--ink-soft)" }}>
           Your caregiver has not approved any photo questions yet.
         </p>
-        <BigButton label="Return to Activities" variant="primary" onClick={onExit} />
+        <BigButton label="Return to Activities" variant="primary" size="patient" onClick={onExit} />
       </div>
     );
   }
@@ -125,36 +139,74 @@ export function PhotoQuestionActivity({
   return (
     <div className="space-y-6 max-w-lg mx-auto w-full">
       {/* Photo Memory Display */}
-      <div className="bg-white rounded-3xl p-6 border-3 border-[#1B3B36] shadow-sm text-center space-y-4">
+      <div
+        className="rounded-[var(--radius-card)] p-6 border-2 shadow-sm text-center space-y-4"
+        style={{
+          background: "var(--surface)",
+          borderColor: "var(--primary)",
+        }}
+      >
         <div
-          className="w-24 h-24 mx-auto rounded-2xl bg-[#F8F6F0] flex items-center justify-center text-5xl border-2 border-[#1B3B36] shadow-xs"
+          className="w-28 h-28 mx-auto rounded-2xl flex items-center justify-center border-2 overflow-hidden shadow-xs"
+          style={{
+            background: "var(--surface-2)",
+            borderColor: "var(--primary)",
+          }}
           aria-hidden="true"
         >
-          {currentQ.image_url || "📸"}
+          {currentQ.image_url && !currentQ.image_url.includes("🌸") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={currentQ.image_url} alt="" className="w-full h-full object-cover rounded-2xl" />
+          ) : (
+            <div className="flex flex-col items-center justify-center p-2 text-center">
+              <Camera size={36} style={{ color: "var(--primary)" }} />
+              <span className="text-[10px] font-bold uppercase tracking-wider mt-1 text-[var(--ink-muted)]">
+                Family Archive
+              </span>
+            </div>
+          )}
         </div>
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#52504C] bg-[#F8F6F0] px-3 py-1 rounded-full border border-[#D1CEC4]">
+          <span
+            className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border"
+            style={{
+              background: "var(--surface-2)",
+              borderColor: "var(--border)",
+              color: "var(--ink-soft)",
+            }}
+          >
             {currentQ.photo_title || "Family Memory Photo"}
           </span>
-          <h2 className="text-xl md:text-2xl font-bold text-[#1B3B36] mt-3 leading-snug">
+          <h2
+            className="text-2xl md:text-3xl font-extrabold mt-3 leading-snug"
+            style={{ color: "var(--ink)" }}
+          >
             {currentQ.question_text}
           </h2>
         </div>
       </div>
 
-      {/* Answer Options Grid (Strict min 72px touch targets) */}
+      {/* Answer Options Grid (Strict min 64px touch targets) */}
       <div className="space-y-3" role="group" aria-label="Answer options">
         {currentQ.options.map((opt, idx) => {
           const isSelected = selectedOptionId === opt.id;
-          let btnStyle = "bg-white border-[#1B3B36] text-[#1C1C1A] hover:bg-[#F2EFE9]";
+          let bg = "var(--surface)";
+          let borderColor = "var(--primary)";
+          let color = "var(--ink)";
 
           if (isAnswered) {
             if (opt.is_correct) {
-              btnStyle = "bg-[#EAF3EE] border-[#2D6A4F] text-[#1B3B36] font-bold";
+              bg = "var(--success-light)";
+              borderColor = "var(--success)";
+              color = "var(--success)";
             } else if (isSelected && !opt.is_correct) {
-              btnStyle = "bg-[#FDF1EC] border-[#9A3412] text-[#9A3412]";
+              bg = "var(--alert-light)";
+              borderColor = "var(--alert)";
+              color = "var(--alert)";
             } else {
-              btnStyle = "bg-white border-[#D1CEC4] text-[#8C8983] opacity-60";
+              bg = "var(--surface)";
+              borderColor = "var(--border)";
+              color = "var(--ink-muted)";
             }
           }
 
@@ -165,13 +217,18 @@ export function PhotoQuestionActivity({
               id={`photo-opt-${idx + 1}`}
               onClick={() => handleSelectOption(opt.id, opt.is_correct)}
               disabled={isAnswered}
-              className={`w-full p-4 rounded-2xl border-3 flex items-center justify-between text-left text-lg font-bold transition-all shadow-xs cursor-pointer ${btnStyle}`}
-              style={{ minHeight: "72px" }}
+              className="w-full p-4 rounded-[var(--radius-card)] border-2 flex items-center justify-between text-left text-xl font-bold transition-all shadow-xs cursor-pointer active:scale-95 disabled:cursor-default"
+              style={{
+                minHeight: "var(--touch-target-patient)",
+                background: bg,
+                borderColor: borderColor,
+                color: color,
+              }}
               aria-label={opt.text}
             >
               <span>{opt.text}</span>
               {isAnswered && opt.is_correct && (
-                <span className="text-xl" aria-hidden="true">✓</span>
+                <Check size={24} style={{ color: "var(--success)" }} aria-hidden="true" />
               )}
             </button>
           );
@@ -183,21 +240,27 @@ export function PhotoQuestionActivity({
         <div
           role="status"
           aria-live="polite"
-          className="p-4 rounded-2xl bg-[#F8F6F0] border-2 border-[#1B3B36] text-center"
+          className="p-4 rounded-[var(--radius-md)] border-2 text-center"
+          style={{
+            background: "var(--primary-light)",
+            borderColor: "var(--primary)",
+            color: "var(--primary-dark)",
+          }}
         >
-          <p className="text-base font-bold text-[#1B3B36]">{feedback}</p>
+          <p className="text-lg font-bold">{feedback}</p>
         </div>
       )}
 
-      {/* Next or Calm Break */}
+      {/* Next or Exit */}
       <div className="pt-2 flex items-center justify-between gap-4">
         <button
           type="button"
           onClick={onExit}
-          className="text-sm font-semibold text-[#52504C] hover:text-[#1C1C1A] underline py-2 px-3"
-          style={{ minHeight: "44px" }}
+          className="inline-flex items-center gap-1.5 text-base font-semibold underline py-3 px-4 rounded-xl cursor-pointer"
+          style={{ color: "var(--ink-soft)", minHeight: "48px" }}
         >
-          Back to Activities
+          <ArrowLeft size={18} aria-hidden="true" />
+          <span>Back to Activities</span>
         </button>
 
         {isAnswered && (
@@ -205,10 +268,14 @@ export function PhotoQuestionActivity({
             type="button"
             id="photo-next-btn"
             onClick={handleNext}
-            className="px-6 py-3 rounded-2xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-base font-bold shadow-xs transition-colors"
-            style={{ minHeight: "56px" }}
+            className="px-6 py-3.5 rounded-full text-white text-lg font-bold shadow-sm transition-transform active:scale-95 inline-flex items-center gap-2 cursor-pointer"
+            style={{
+              background: "var(--primary)",
+              minHeight: "56px",
+            }}
           >
-            {currentIndex + 1 < questions.length ? "Next Memory ➔" : "Finish Session ➔"}
+            <span>{currentIndex + 1 < questions.length ? "Next Memory" : "Finish Session"}</span>
+            <ArrowRight size={20} aria-hidden="true" />
           </button>
         )}
       </div>

@@ -77,7 +77,7 @@ docker compose up --build
 13. **Design system compliance.** All UI work must follow `DESIGN.md`. Do not invent new colors, sizes or components.
 
 ## 8. Current state (update every session)
-- Phase: **All Phases Complete (Phase 1: Foundation B01-B05, Phase 2: Patient Core B06-B09, Phase 3: Caregiver & Memories B10-B13, Phase 4: ASHA & Clinician Triage B14-B22, Phase 5: Production Polish B23-B26).**
+- Phase: **UI Redesign B27-B30 (B27 Foundation fixes + shell, B28 Cinematic landing, B29 Caregiver & ASHA polish, B30 3D memory house). Amendment A1 added to DESIGN.md section 9.**
 - Done:
   - P1 Foundation: B01 (PWA plan), B02 (Frontend scaffold + tokens + Dexie + locales), B03 (FastAPI auth + RLS + consent gating + idempotent events), B04 (Anomaly detection + Monte Carlo simulation + synthetic evidence), B05 (Playwright E2E + axe a11y + CI).
   - P2 Patient Core: B06 (Patient home + Memory Match game with NER cultural pairs), B07 (Adaptive session flow + 3-consecutive-error stop rules + orientation card), B08 (Backend sync + ability recalculation + ability history endpoint), B09 (Offline sync client with batching up to 200, strict ack deletion, backoff, and reconnect auto-sync).
@@ -111,6 +111,15 @@ docker compose up --build
 | 2026-10 | Strict unapproved item quarantine | Ensures AI-generated questions are never exposed to patients before caregiver review |
 | 2026-10 | Three-tier speech fallback | Guarantees multimodal accessibility regardless of cloud connectivity or language |
 | 2026-10 | Zero raw audio retention | Ephemeral in-memory transcription eliminates voice biometric privacy liabilities |
+| 2026-10 | Two-layer UI: calm PATIENT layer and richer SHOWCASE layer (landing, care, asha, house) | Impressive first impression for judges and families without risking confusion for people with memory difficulties |
+| 2026-10 | Patient routes keep rule 02 unchanged; no 3D, parallax, cursor effects or scramble there | Predictability is a safety feature for the patient |
+| 2026-10 | Global Calm mode plus prefers-reduced-motion disables all cinematic effects and shows a static Album layout | Accessibility and low-end device safety; every effect must be optional |
+| 2026-10 | Gallery dark theme built only from existing tokens (--ink, --bg, --primary-light, --accent) | Keeps rule 13 (no new colours) intact |
+| 2026-10 | Reference site used for interaction language only; no code, assets or text copied | Originality and licensing |
+| 2026-10 | 3D memory house lazy-loaded with automatic fallback to Album grid (no WebGL, low FPS, low memory, Save-Data) | Must run on low-end Android and offline |
+| 2026-10 | Self-host all fonts and bundle all 3D assets; no CDN at runtime | Offline-first rule 03; Google Fonts import breaks offline |
+| 2026-10 | Evidence numbers kept but shown under a "Show the numbers" disclosure after a plain-language summary | Rule 7 (explainable AI) plus a calmer caregiver UI |
+| 2026-10 | New UI dependencies need a refreshed R7 note, approval and a decision-log row first | Rule 11 and solo-developer simplicity |
 
 ## 10. Glossary
 ASHA: Accredited Social Health Activist. ANM: Auxiliary Nurse Midwife. PHC: Primary Health Centre. NER: North Eastern Region. RLS: Row Level Security. Reminiscence: activities using a person's own past (photos, songs). θ (theta): patient ability. b: item difficulty.

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
+import { ArrowLeft, ArrowRight, Download, FileText, CalendarCheck, CheckCircle2, UserCheck } from "lucide-react";
 import { Link } from "@/i18n/routing";
-
+import { StatusChip, type StatusLevel } from "@/components/ui/StatusChip";
+import { SyncStatusChip } from "@/components/ui/SyncStatusChip";
 import {
   type AshaPatient,
   INITIAL_ASHA_PATIENTS,
@@ -44,90 +46,107 @@ export default function AshaDashboardPage() {
     setScheduledVisits((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const getStatusChip = (status: AshaPatient["status"], label: string) => {
-    if (status === "checkin_suggested") {
-      return (
-        <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1] inline-flex items-center gap-1.5">
-          <span aria-hidden="true">⚠️</span>
-          <span>{label}</span>
-        </span>
-      );
-    }
-    if (status === "watch") {
-      return (
-        <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#FFF8E7] text-[#7A5800] border border-[#E0D0A0] inline-flex items-center gap-1.5">
-          <span aria-hidden="true">👁️</span>
-          <span>{label}</span>
-        </span>
-      );
-    }
-    return (
-      <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#EAF3EE] text-[#2D6A4F] border border-[#A7D1B9] inline-flex items-center gap-1.5">
-        <span aria-hidden="true">✓</span>
-        <span>{label}</span>
-      </span>
-    );
+  const mapStatusLevel = (status: AshaPatient["status"]): StatusLevel => {
+    if (status === "checkin_suggested") return "urgent";
+    if (status === "watch") return "watch";
+    return "steady";
   };
 
   return (
-    <div className="flex-1 max-w-3xl mx-auto w-full py-4 space-y-6">
-      {/* Top Banner Navigation */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
+    <div className="flex-1 max-w-6xl mx-auto w-full px-4 py-6 space-y-6">
+      {/* ── Top Bar Navigation ── */}
+      <div className="flex items-center justify-between flex-wrap gap-3 border-b pb-4" style={{ borderColor: "var(--border-soft)" }}>
         {selectedPatient ? (
           <button
             type="button"
             onClick={() => setSelectedPatientId(null)}
-            className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl cursor-pointer"
-            style={{ minHeight: "44px" }}
+            className="inline-flex items-center gap-2 text-base font-semibold px-4 py-2 rounded-full border transition-colors hover:bg-[var(--surface-2)] cursor-pointer"
+            style={{
+              background: "var(--surface)",
+              borderColor: "var(--border)",
+              color: "var(--primary)",
+              minHeight: "44px",
+            }}
           >
-            <span aria-hidden="true">⬅️</span>
+            <ArrowLeft size={18} aria-hidden="true" />
             <span>Back to Assigned Households</span>
           </button>
         ) : (
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-base font-semibold text-[#1B3B36] p-2 hover:bg-[#F2EFE9] rounded-xl no-underline"
-            style={{ minHeight: "44px" }}
+            className="inline-flex items-center gap-2 text-base font-semibold px-4 py-2 rounded-full border no-underline transition-colors hover:bg-[var(--surface-2)]"
+            style={{
+              background: "var(--surface)",
+              borderColor: "var(--border)",
+              color: "var(--primary)",
+              minHeight: "44px",
+            }}
           >
-            <span aria-hidden="true">⬅️</span>
+            <ArrowLeft size={18} aria-hidden="true" />
             <span>{tCommon("back")}</span>
           </Link>
         )}
 
-        <span className="text-sm font-semibold text-[#2D6A4F] bg-[#EAF3EE] px-3 py-1.5 rounded-full border border-[#A7D1B9]">
-          ASHA Portal • Sector 4
-        </span>
+        <div className="flex items-center gap-3">
+          <SyncStatusChip />
+          <span
+            className="text-xs font-bold px-3 py-1.5 rounded-full border uppercase tracking-wider text-[var(--primary)] bg-[var(--primary-light)] border-[var(--primary)]"
+          >
+            ASHA Portal · PHC Sector 4
+          </span>
+        </div>
       </div>
 
       {exportNotice && (
         <div
           role="status"
           aria-live="polite"
-          className="bg-[#EAF3EE] text-[#1B3B36] border border-[#A7D1B9] px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-xs"
+          className="rounded-[var(--radius-md)] px-4 py-3 text-xs font-bold flex items-center gap-2 border shadow-xs"
+          style={{
+            background: "var(--primary-light)",
+            borderColor: "var(--primary)",
+            color: "var(--primary-dark)",
+          }}
         >
-          <span aria-hidden="true">📄</span>
+          <FileText size={18} aria-hidden="true" />
           <span>{exportNotice}</span>
         </div>
       )}
 
-      {/* VIEW 1: PATIENT DETAIL SCREEN */}
+      {/* ── VIEW 1: PATIENT DETAIL SCREEN ── */}
       {selectedPatient ? (
         <div className="space-y-6" role="region" aria-label="Elder Clinical Detail">
           {/* Header Card */}
-          <div className="bg-white rounded-3xl p-6 border-2 border-[#1B3B36] shadow-xs space-y-4">
-            <div className="flex items-start justify-between flex-wrap gap-2">
-              <div className="space-y-1">
+          <div
+            className="rounded-[var(--radius-card)] p-6 md:p-8 border-2 shadow-sm space-y-4"
+            style={{
+              background: "var(--surface)",
+              borderColor: "var(--primary)",
+            }}
+          >
+            <div className="flex items-start justify-between flex-wrap gap-4">
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1]">
-                    [DEMO / SYNTHETIC DATA]
+                  <span
+                    className="text-xs font-bold px-2.5 py-0.5 rounded-full border"
+                    style={{
+                      background: "var(--surface-2)",
+                      borderColor: "var(--border)",
+                      color: "var(--ink-soft)",
+                    }}
+                  >
+                    SYNTHETIC DEMO PATIENT
                   </span>
-                  {getStatusChip(selectedPatient.status, selectedPatient.statusLabel)}
+                  <StatusChip
+                    status={mapStatusLevel(selectedPatient.status)}
+                    label={selectedPatient.statusLabel}
+                  />
                 </div>
-                <h2 className="text-2xl font-bold text-[#1C1C1A]">
+                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight" style={{ color: "var(--ink)" }}>
                   {selectedPatient.name}
-                </h2>
-                <p className="text-sm text-[#52504C]">
-                  {selectedPatient.location} • Preferred Language: {selectedPatient.preferredLanguage}
+                </h1>
+                <p className="text-sm font-medium" style={{ color: "var(--ink-soft)" }}>
+                  {selectedPatient.location} · Preferred Language: {selectedPatient.preferredLanguage}
                 </p>
               </div>
 
@@ -136,85 +155,113 @@ export default function AshaDashboardPage() {
                 type="button"
                 id="export-pdf-detail-btn"
                 onClick={() => handleExportPdf(selectedPatient)}
-                className="px-4 py-2.5 rounded-xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-2"
-                style={{ minHeight: "44px" }}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-white text-xs md:text-sm font-bold shadow-sm transition-transform active:scale-95 cursor-pointer"
+                style={{
+                  background: "var(--primary)",
+                  minHeight: "48px",
+                }}
               >
-                <span aria-hidden="true">📥</span>
-                <span>Download Report (PDF)</span>
+                <Download size={18} aria-hidden="true" />
+                <span>Export PDF Summary</span>
               </button>
             </div>
 
             {/* Household Guardian Info */}
-            <div className="p-4 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4] text-xs space-y-1">
-              <span className="font-bold text-[#1C1C1A] block uppercase tracking-wider">
+            <div
+              className="p-4 rounded-[var(--radius-md)] border text-xs md:text-sm space-y-1"
+              style={{
+                background: "var(--surface-2)",
+                borderColor: "var(--border)",
+              }}
+            >
+              <span className="font-bold block uppercase tracking-wider text-[var(--ink)]">
                 Primary Caregiver Contact
               </span>
-              <p className="text-[#52504C]">
+              <p style={{ color: "var(--ink-soft)" }}>
                 Guardian: <strong>{selectedPatient.guardianName}</strong> ({selectedPatient.guardianRel})
               </p>
-              <p className="text-[#52504C]">
+              <p style={{ color: "var(--ink-soft)" }}>
                 Consent: Active verifiable guardian consent registered under DPDP Act 2023.
               </p>
             </div>
           </div>
 
           {/* Explainable Statistical Evidence */}
-          <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs space-y-4">
-            <h3 className="text-lg font-bold text-[#1C1C1A]">
-              Explainable Anomaly Evidence
-            </h3>
-            <p className="text-xs text-[#52504C]">
-              Objective numbers comparing current session against the 14-day rolling baseline.
-            </p>
+          <div
+            className="rounded-[var(--radius-card)] p-6 md:p-8 border shadow-sm space-y-6"
+            style={{
+              background: "var(--surface)",
+              borderColor: "var(--border)",
+            }}
+          >
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold tracking-tight" style={{ color: "var(--ink)" }}>
+                Explainable Anomaly Evidence
+              </h2>
+              <p className="text-xs md:text-sm" style={{ color: "var(--ink-soft)" }}>
+                Mathematical evidence comparing current session against the 14-day rolling baseline (median and MAD).
+              </p>
+            </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center sm:text-left">
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Observed Score</span>
-                <span className="text-lg font-bold text-[#9A3412]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center sm:text-left">
+              <div className="p-4 rounded-[var(--radius-md)] border" style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}>
+                <span className="text-xs font-bold uppercase tracking-wider block text-[var(--ink-muted)]">Observed Score</span>
+                <span className="text-2xl font-black mt-1 block" style={{ color: "var(--alert)" }}>
                   {Math.round(selectedPatient.currentScore * 100)}%
                 </span>
               </div>
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Baseline Median</span>
-                <span className="text-lg font-bold text-[#1B3B36]">
+              <div className="p-4 rounded-[var(--radius-md)] border" style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}>
+                <span className="text-xs font-bold uppercase tracking-wider block text-[var(--ink-muted)]">Baseline Median</span>
+                <span className="text-2xl font-black mt-1 block" style={{ color: "var(--primary)" }}>
                   {Math.round(selectedPatient.baselineMedian * 100)}%
                 </span>
               </div>
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Robust Z-Score</span>
-                <span className="text-lg font-bold text-[#9A3412]">
+              <div className="p-4 rounded-[var(--radius-md)] border" style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}>
+                <span className="text-xs font-bold uppercase tracking-wider block text-[var(--ink-muted)]">Robust Z-Score</span>
+                <span className="text-2xl font-black mt-1 block" style={{ color: "var(--alert)" }}>
                   {selectedPatient.robustZ}
                 </span>
               </div>
-              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#D1CEC4]">
-                <span className="text-[11px] text-[#52504C] block">Sessions This Week</span>
-                <span className="text-lg font-bold text-[#1C1C1A]">
+              <div className="p-4 rounded-[var(--radius-md)] border" style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}>
+                <span className="text-xs font-bold uppercase tracking-wider block text-[var(--ink-muted)]">Weekly Sessions</span>
+                <span className="text-2xl font-black mt-1 block" style={{ color: "var(--ink)" }}>
                   {selectedPatient.sessionsThisWeek}
                 </span>
               </div>
             </div>
 
             {/* Domains Breakdown */}
-            <div className="space-y-2 pt-2">
-              <span className="text-xs font-bold text-[#52504C] block uppercase tracking-wider">
+            <div className="space-y-3 pt-2">
+              <span className="text-xs font-bold uppercase tracking-wider block text-[var(--ink-muted)]">
                 Recent Domain Activity
               </span>
               <div className="space-y-2">
                 {selectedPatient.domains.map((d) => (
                   <div
                     key={d.name}
-                    className="p-3 rounded-xl bg-[#F8F6F0] border border-[#D1CEC4] flex items-center justify-between text-xs"
+                    className="p-3.5 rounded-[var(--radius-md)] border flex items-center justify-between text-sm"
+                    style={{
+                      background: "var(--surface-2)",
+                      borderColor: "var(--border-soft)",
+                    }}
                   >
-                    <span className="font-semibold text-[#1C1C1A]">{d.name}</span>
-                    <span className="font-bold text-[#1B3B36]">{Math.round(d.score * 100)}%</span>
+                    <span className="font-semibold text-[var(--ink)]">{d.name}</span>
+                    <span className="font-bold text-[var(--primary)]">{Math.round(d.score * 100)}%</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Clinical Advisory */}
-            <div className="p-4 rounded-xl bg-[#FAF8F5] border-2 border-[#D1CEC4] text-xs text-[#52504C] space-y-1">
-              <span className="font-bold text-[#1C1C1A] block">Non-Diagnostic Guidance:</span>
+            {/* Clinical Advisory Guidance */}
+            <div
+              className="p-5 rounded-[var(--radius-md)] border space-y-1 text-xs md:text-sm"
+              style={{
+                background: "var(--surface-2)",
+                borderColor: "var(--border)",
+                color: "var(--ink-soft)",
+              }}
+            >
+              <span className="font-bold block text-[var(--ink)]">Non-Diagnostic Guidance:</span>
               <p>
                 Memora is an offline cognitive stimulation platform and not a medical device. Variations in scores occur due to temporary tiredness, poor sleep, or mild illness. Consider a check-up with a doctor if this pattern continues.
               </p>
@@ -226,42 +273,68 @@ export default function AshaDashboardPage() {
                 type="button"
                 id="toggle-visit-btn"
                 onClick={() => toggleVisitScheduled(selectedPatient.id)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-xs md:text-sm font-bold border transition-colors cursor-pointer"
+                style={
                   scheduledVisits[selectedPatient.id]
-                    ? "bg-[#EAF3EE] text-[#1B3B36] border-[#A7D1B9]"
-                    : "bg-[#1B3B36] text-white border-[#1B3B36]"
-                }`}
-                style={{ minHeight: "44px" }}
+                    ? {
+                        background: "var(--primary-light)",
+                        color: "var(--primary-dark)",
+                        borderColor: "var(--primary)",
+                        minHeight: "48px",
+                      }
+                    : {
+                        background: "var(--primary)",
+                        color: "var(--primary-ink)",
+                        borderColor: "var(--primary)",
+                        minHeight: "48px",
+                      }
+                }
               >
-                {scheduledVisits[selectedPatient.id]
-                  ? "✓ Household Check-in Scheduled"
-                  : "Schedule Household Check-in"}
+                {scheduledVisits[selectedPatient.id] ? (
+                  <>
+                    <CheckCircle2 size={18} aria-hidden="true" />
+                    <span>Household Check-in Scheduled</span>
+                  </>
+                ) : (
+                  <>
+                    <CalendarCheck size={18} aria-hidden="true" />
+                    <span>Schedule Household Check-in</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
         </div>
       ) : (
-        /* VIEW 2: PATIENT LIST SCREEN (ORDERED BY TRIAGE NEED) */
+        /* ── VIEW 2: PATIENT LIST SCREEN (ORDERED BY TRIAGE NEED) ── */
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-[#D1CEC4] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div
+            className="rounded-[var(--radius-card)] p-6 md:p-8 border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+            style={{
+              background: "var(--surface)",
+              borderColor: "var(--border)",
+            }}
+          >
             <div>
-              <h2 className="text-2xl font-bold text-[#1C1C1A]">
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight" style={{ color: "var(--ink)" }}>
                 {t("title")}
-              </h2>
-              <p className="text-sm text-[#52504C] mt-1">
+              </h1>
+              <p className="text-sm md:text-base font-normal mt-1" style={{ color: "var(--ink-soft)" }}>
                 3 assigned households in Primary Health Centre sector. Ordered by triage priority.
               </p>
             </div>
 
-            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#FDF1EC] text-[#9A3412] border border-[#F5C2B1] self-start md:self-auto">
-              [DEMO / SYNTHETIC DATA]
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full border self-start md:self-auto uppercase tracking-wider text-[var(--ink-soft)] bg-[var(--surface-2)] border-[var(--border)]">
+              SYNTHETIC DEMO PATIENTS
             </span>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-lg font-bold text-[#1C1C1A]">Assigned Elders ({patients.length})</h3>
-              <span className="text-xs font-semibold text-[#52504C]">
+              <h2 className="text-lg font-bold" style={{ color: "var(--ink)" }}>
+                Assigned Elders ({patients.length})
+              </h2>
+              <span className="text-xs font-semibold" style={{ color: "var(--ink-soft)" }}>
                 Priority order: Urgent Check-in ➔ Watch ➔ Steady
               </span>
             </div>
@@ -270,37 +343,51 @@ export default function AshaDashboardPage() {
               {patients.map((elder) => (
                 <div
                   key={elder.id}
-                  className="p-5 bg-white rounded-2xl border-2 border-[#D1CEC4] hover:border-[#1B3B36] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
+                  className="p-5 md:p-6 rounded-[var(--radius-card)] border-2 transition-all hover:shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  style={{
+                    background: "var(--surface)",
+                    borderColor: elder.status === "checkin_suggested" ? "var(--alert)" : "var(--border)",
+                  }}
                   role="listitem"
                 >
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-bold text-[#52504C] bg-[#F8F6F0] px-2 py-0.5 rounded-md border border-[#D1CEC4]">
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-md border text-[var(--ink-soft)] bg-[var(--surface-2)] border-[var(--border)]">
                         Priority {elder.triagePriority}
                       </span>
-                      {getStatusChip(elder.status, elder.statusLabel)}
+                      <StatusChip
+                        status={mapStatusLevel(elder.status)}
+                        label={elder.statusLabel}
+                        size="sm"
+                      />
                     </div>
 
-                    <h4 className="text-lg font-bold text-[#1C1C1A]">{elder.name}</h4>
-                    <p className="text-xs text-[#52504C]">
-                      {elder.location} • Guardian: {elder.guardianName} ({elder.guardianRel})
+                    <h3 className="text-xl font-bold" style={{ color: "var(--ink)" }}>
+                      {elder.name}
+                    </h3>
+                    <p className="text-xs md:text-sm" style={{ color: "var(--ink-soft)" }}>
+                      {elder.location} · Guardian: {elder.guardianName} ({elder.guardianRel})
                     </p>
-                    <span className="text-[11px] text-[#52504C] block mt-1">
-                      Last active: {elder.lastActive} • {elder.sessionsThisWeek} sessions this week
+                    <span className="text-xs text-[var(--ink-muted)] block">
+                      Last active: {elder.lastActive} · {elder.sessionsThisWeek} sessions this week
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end md:self-center">
+                  <div className="flex items-center gap-3 self-end md:self-center">
                     {/* PDF Export Button */}
                     <button
                       type="button"
                       id={`export-pdf-${elder.id}`}
                       onClick={() => handleExportPdf(elder)}
-                      className="px-3 py-2 rounded-xl border border-[#D1CEC4] hover:bg-[#F2EFE9] text-xs font-bold text-[#1C1C1A] transition-colors flex items-center gap-1.5"
-                      style={{ minHeight: "40px" }}
+                      className="px-4 py-2.5 rounded-full border text-xs font-bold transition-colors hover:bg-[var(--surface-2)] flex items-center gap-1.5 cursor-pointer"
+                      style={{
+                        borderColor: "var(--border)",
+                        color: "var(--ink)",
+                        minHeight: "44px",
+                      }}
                       aria-label={`Download PDF report for ${elder.name}`}
                     >
-                      <span aria-hidden="true">📥</span>
+                      <Download size={15} aria-hidden="true" />
                       <span>PDF</span>
                     </button>
 
@@ -309,10 +396,14 @@ export default function AshaDashboardPage() {
                       type="button"
                       id={`view-detail-${elder.id}`}
                       onClick={() => setSelectedPatientId(elder.id)}
-                      className="px-4 py-2 rounded-xl bg-[#1B3B36] hover:bg-[#2D6A4F] text-white text-xs font-bold shadow-xs transition-colors"
-                      style={{ minHeight: "40px" }}
+                      className="px-5 py-2.5 rounded-full text-white text-xs md:text-sm font-bold shadow-xs transition-transform active:scale-95 inline-flex items-center gap-1.5 cursor-pointer"
+                      style={{
+                        background: "var(--primary)",
+                        minHeight: "44px",
+                      }}
                     >
-                      View Details ➔
+                      <span>View Details</span>
+                      <ArrowRight size={15} aria-hidden="true" />
                     </button>
                   </div>
                 </div>
