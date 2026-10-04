@@ -15,7 +15,7 @@
 | **Phase 1** | Foundation Fixes (Problems 1–5, 8–10, R7b deps, A1 amendment, tests) | ✅ Completed | All gates green; zero hex in src, all 6 locales synced |
 | **Phase 2** | Design System Components & Dev Gallery (`/dev/components`) | ✅ Completed | 10 token-based UI components + dev gallery at /[locale]/dev/components; all 60 tests green |
 | **Phase 3** | Shell, Navigation, Full-Screen Menu & Calm Mode Store | ✅ Completed | Compact header (48px targets, calm toggle), FullscreenMenu, PatientBottomBar, useMemoraStore; all 64 tests green |
-| **Phase 4** | Patient Layer Redesign (`/play`, `/play/album`, `/play/talk`, `/play/reminders`) | ⏳ Pending | - |
+| **Phase 4** | Patient Layer Redesign (`/play`, `/play/album`, `/play/talk`, `/play/reminders`) | ✅ Completed | Modular play page (3 big choices), SVG leaf card back, /play/album, /play/talk, /play/reminders; all 71 tests green |
 | **Phase 5** | Cinematic Landing Showcase (`/[locale]`) | ⏳ Pending | - |
 | **Phase 6** | Caregiver Redesign (`/care`, `/care/timeline`, `/care/people`) | ⏳ Pending | - |
 | **Phase 7** | ASHA Triage & PDF Redesign (`/asha`) | ⏳ Pending | - |
