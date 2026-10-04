@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
+import { FolderOpen } from "lucide-react";
 
 interface EmptyStateProps {
-  icon?: string;
+  icon?: React.ReactNode;
   title: string;
   description?: string;
   action?: React.ReactNode;
@@ -9,7 +12,7 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  icon = "✦",
+  icon,
   title,
   description,
   action,
@@ -20,14 +23,19 @@ export function EmptyState({
       className={`flex flex-col items-center justify-center text-center py-12 px-6 ${className}`}
     >
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-4"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 border"
         style={{
           background: "var(--primary-light)",
-          color: "var(--primary)",
+          borderColor: "var(--primary)",
+          color: "var(--primary-dark)",
         }}
         aria-hidden="true"
       >
-        {icon}
+        {typeof icon === "string" ? (
+          <span className="text-2xl">{icon}</span>
+        ) : (
+          icon || <FolderOpen size={28} />
+        )}
       </div>
       <h3
         className="text-lg font-bold mb-1"

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, Sparkles } from "lucide-react";
 
 interface PromptBubbleProps {
   message: string;
@@ -50,7 +50,7 @@ export function PromptBubble({
     >
       <div className="flex items-start gap-4">
         <div
-          className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 border"
+          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border"
           style={{
             background: "var(--accent-light)",
             borderColor: "var(--accent)",
@@ -58,7 +58,7 @@ export function PromptBubble({
           }}
           aria-hidden="true"
         >
-          🌸
+          <Sparkles size={24} />
         </div>
         <div className="space-y-1">
           <p

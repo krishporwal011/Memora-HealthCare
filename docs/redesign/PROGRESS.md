@@ -13,7 +13,7 @@
 |---|---|---|---|
 | **Phase 0** | Inspection & Comprehensive Master Plan | ✅ Completed | Approved by owner |
 | **Phase 1** | Foundation Fixes (Problems 1–5, 8–10, R7b deps, A1 amendment, tests) | ✅ Completed | All gates green; zero hex in src, all 6 locales synced |
-| **Phase 2** | Design System Components & Dev Gallery (`/dev/components`) | ⏳ Pending | - |
+| **Phase 2** | Design System Components & Dev Gallery (`/dev/components`) | ✅ Completed | 10 token-based UI components + dev gallery at /[locale]/dev/components; all 60 tests green |
 | **Phase 3** | Shell, Navigation, Full-Screen Menu & Calm Mode Store | ⏳ Pending | - |
 | **Phase 4** | Patient Layer Redesign (`/play`, `/play/album`, `/play/talk`, `/play/reminders`) | ⏳ Pending | - |
 | **Phase 5** | Cinematic Landing Showcase (`/[locale]`) | ⏳ Pending | - |
