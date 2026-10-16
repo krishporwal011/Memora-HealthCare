@@ -16,6 +16,7 @@ export interface HouseMemory {
   people: string[];
   story: string;
   color: string;
+  imageUrl?: string;
 }
 
 export const HOUSE_MEMORIES: HouseMemory[] = [
@@ -28,6 +29,7 @@ export const HOUSE_MEMORIES: HouseMemory[] = [
     people: ["Grandmother", "Jonali", "Ranjit"],
     story: "In 1985, our family gathered in Tezpur for Rongali Bihu. Grandmother draped the hand-woven phulam gamosa with sweet pitha and prayers for health.",
     color: "var(--accent)",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia.png",
   },
   {
     id: "hm-2",
@@ -38,6 +40,7 @@ export const HOUSE_MEMORIES: HouseMemory[] = [
     people: ["Father", "Ranjit"],
     story: "Taking the early morning wooden boat across the mighty Brahmaputra river near Silghat. The water was golden in the autumn morning mist.",
     color: "var(--primary)",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (1).png",
   },
   {
     id: "hm-3",
@@ -48,6 +51,7 @@ export const HOUSE_MEMORIES: HouseMemory[] = [
     people: ["Mother", "Pratima"],
     story: "Mother sang this evening melody by the oil lamp. It brought calmness to the whole courtyard as evening stars appeared.",
     color: "var(--accent-dark)",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (2).png",
   },
   {
     id: "hm-4",
@@ -58,6 +62,7 @@ export const HOUSE_MEMORIES: HouseMemory[] = [
     people: ["Uncle Hemen", "Jonali"],
     story: "Walking through rows of tea bushes in Jorhat with uncle Hemen, breathing the crisp morning air and listening to songbirds.",
     color: "var(--success)",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (3).png",
   },
 ];
 
@@ -151,6 +156,7 @@ export function MemoryHouseAlbumFallback({ reason, onRetry3D }: MemoryHouseAlbum
             caption={m.caption}
             year={m.year}
             people={m.people}
+            imageUrl={m.imageUrl}
             isApproved
             onClick={() => setSelectedMemory(m)}
           />
@@ -194,18 +200,33 @@ export function MemoryHouseAlbumFallback({ reason, onRetry3D }: MemoryHouseAlbum
               </button>
             </div>
 
-            <div
-              className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
-              style={{
-                background: "var(--surface-2)",
-                borderColor: "var(--border)",
-              }}
-            >
-              <Camera size={44} style={{ color: "var(--accent)" }} />
-              <span className="text-xs font-bold text-[var(--ink-muted)] mt-2">
-                Synthetic Framed Archive
-              </span>
-            </div>
+            {/* Media preview */}
+            {selectedMemory.imageUrl ? (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] overflow-hidden border-2 shadow-xs"
+                style={{ borderColor: "var(--border)" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedMemory.imageUrl}
+                  alt={selectedMemory.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
+                style={{
+                  background: "var(--surface-2)",
+                  borderColor: "var(--border)",
+                }}
+              >
+                <Camera size={44} style={{ color: "var(--accent)" }} />
+                <span className="text-xs font-bold text-[var(--ink-muted)] mt-2">
+                  Synthetic Framed Archive
+                </span>
+              </div>
+            )}
 
             <div className="space-y-3">
               <h3 className="text-2xl font-bold">{selectedMemory.title}</h3>

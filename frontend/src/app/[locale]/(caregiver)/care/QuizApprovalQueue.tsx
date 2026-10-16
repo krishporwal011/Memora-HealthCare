@@ -55,7 +55,7 @@ export const INITIAL_DEMO_QUESTIONS: QuizItem[] = [
     memory_id: "mem-01",
     question_text: "Who is receiving the phulam gamosa in the Tezpur photo?",
     photo_title: "Rongali Bihu 1985 Celebration",
-    image_url: "🌸",
+    image_url: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia.png",
     options: [
       { id: "opt-1", text: "Grandmother", is_correct: true },
       { id: "opt-2", text: "Uncle Hemen", is_correct: false },
@@ -72,7 +72,7 @@ export const INITIAL_DEMO_QUESTIONS: QuizItem[] = [
     memory_id: "mem-01",
     question_text: "Which festive occasion is celebrated in this family gathering?",
     photo_title: "Ancestral Courtyard in Tezpur",
-    image_url: "🌾",
+    image_url: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia.png",
     options: [
       { id: "opt-1", text: "Rongali Bihu", is_correct: true },
       { id: "opt-2", text: "Durga Puja", is_correct: false },
@@ -197,12 +197,25 @@ export function QuizApprovalQueue({ patientId }: QuizApprovalQueueProps) {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div
-                    className="w-12 h-12 rounded-xl bg-white border border-[var(--border)] flex items-center justify-center text-2xl shrink-0"
-                    aria-hidden="true"
-                  >
-                    <Camera className="w-6 h-6 text-[var(--primary)]" />
-                  </div>
+                  {item.image_url ? (
+                    <div
+                      className="w-12 h-12 rounded-xl border border-[var(--border)] overflow-hidden shrink-0 shadow-2xs"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.image_url}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-12 h-12 rounded-xl bg-white border border-[var(--border)] flex items-center justify-center text-2xl shrink-0"
+                      aria-hidden="true"
+                    >
+                      <Camera className="w-6 h-6 text-[var(--primary)]" />
+                    </div>
+                  )}
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent-dark)] bg-[var(--accent-light)] px-2 py-0.5 rounded-md border border-[var(--accent)]">
                       AI Question • {item.photo_title || "Family Memory"}

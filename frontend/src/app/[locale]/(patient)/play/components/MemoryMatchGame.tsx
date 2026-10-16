@@ -7,6 +7,7 @@ export interface CardItem {
   id: string;
   name: string;
   icon: string;
+  imageUrl?: string;
   pairKey: string;
   hint?: string;
 }
@@ -84,9 +85,20 @@ export function MemoryMatchGame({
             >
               {isFlipped ? (
                 <div className="flex flex-col items-center justify-center text-center gap-2">
-                  <span className="text-4xl sm:text-5xl" aria-hidden="true">
-                    {card.icon}
-                  </span>
+                  {card.imageUrl ? (
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-[var(--border-soft)] shadow-xs">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={card.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <span className="text-4xl sm:text-5xl" aria-hidden="true">
+                      {card.icon}
+                    </span>
+                  )}
                   <span
                     className="text-base sm:text-lg font-bold tracking-tight"
                     style={{

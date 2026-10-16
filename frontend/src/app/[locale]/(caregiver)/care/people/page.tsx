@@ -13,6 +13,7 @@ interface FamilyPerson {
   memoriesCount: number;
   isPrimaryCaregiver?: boolean;
   notes: string;
+  avatarUrl?: string;
 }
 
 const FAMILY_PEOPLE: FamilyPerson[] = [
@@ -24,6 +25,7 @@ const FAMILY_PEOPLE: FamilyPerson[] = [
     memoriesCount: 14,
     isPrimaryCaregiver: true,
     notes: "Visits every morning and evening. Manages medication routines and daily photos.",
+    avatarUrl: "/memora-assets/Gemini_Generated_Image_t1d2djt1d2djt1d2.png",
   },
   {
     id: "p2",
@@ -33,6 +35,7 @@ const FAMILY_PEOPLE: FamilyPerson[] = [
     memoriesCount: 8,
     isPrimaryCaregiver: false,
     notes: "Calls every Sunday evening from Guwahati. Loved fishing trips with father.",
+    avatarUrl: "/memora-assets/Gemini_Generated_Image_t1d2djt1d2djt1d2 (1).png",
   },
   {
     id: "p3",
@@ -42,6 +45,7 @@ const FAMILY_PEOPLE: FamilyPerson[] = [
     memoriesCount: 9,
     isPrimaryCaregiver: false,
     notes: "Appears in 1985 Bihu photos with phulam gamosa. Inspires calm reminiscence.",
+    avatarUrl: "/memora-assets/Gemini_Generated_Image_t1d2djt1d2djt1d2 (2).png",
   },
   {
     id: "p4",
@@ -51,6 +55,17 @@ const FAMILY_PEOPLE: FamilyPerson[] = [
     memoriesCount: 5,
     isPrimaryCaregiver: false,
     notes: "Lives in Jorhat near the tea gardens. Frequent topic in daily questions.",
+    avatarUrl: "/memora-assets/Gemini_Generated_Image_t1d2djt1d2djt1d2 (3).png",
+  },
+  {
+    id: "p5",
+    name: "Didi Priyanka",
+    relationship: "Community ASHA Health Worker",
+    phone: "tel:+919876543215",
+    memoriesCount: 3,
+    isPrimaryCaregiver: false,
+    notes: "Assigned ASHA health worker from Tezpur PHC. Conducts weekly wellness visits.",
+    avatarUrl: "/memora-assets/Gemini_Generated_Image_t1d2djt1d2djt1d2 (4).png",
   },
 ];
 
@@ -112,17 +127,33 @@ export default function CaregiverPeoplePage() {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-4">
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold border-2"
-                  style={{
-                    background: person.isPrimaryCaregiver ? "var(--primary-light)" : "var(--surface-2)",
-                    borderColor: person.isPrimaryCaregiver ? "var(--primary)" : "var(--border)",
-                    color: person.isPrimaryCaregiver ? "var(--primary)" : "var(--ink)",
-                  }}
-                  aria-hidden="true"
-                >
-                  {person.name.charAt(0)}
-                </div>
+                {person.avatarUrl ? (
+                  <div
+                    className="w-14 h-14 rounded-full overflow-hidden border-2 shrink-0"
+                    style={{
+                      borderColor: person.isPrimaryCaregiver ? "var(--primary)" : "var(--border)",
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={person.avatarUrl}
+                      alt={person.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold border-2 shrink-0"
+                    style={{
+                      background: person.isPrimaryCaregiver ? "var(--primary-light)" : "var(--surface-2)",
+                      borderColor: person.isPrimaryCaregiver ? "var(--primary)" : "var(--border)",
+                      color: person.isPrimaryCaregiver ? "var(--primary)" : "var(--ink)",
+                    }}
+                    aria-hidden="true"
+                  >
+                    {person.name.charAt(0)}
+                  </div>
+                )}
                 <div>
                   <h3 className="text-xl font-bold leading-tight" style={{ color: "var(--ink)" }}>
                     {person.name}

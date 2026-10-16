@@ -358,18 +358,33 @@ export function MemoryHouseScene({ onFpsDrop, onExit }: MemoryHouseSceneProps) {
               </button>
             </div>
 
-            <div
-              className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
-              style={{
-                background: "var(--surface-2)",
-                borderColor: "var(--border)",
-              }}
-            >
-              <Camera size={44} style={{ color: "var(--accent)" }} />
-              <span className="text-xs font-bold text-[var(--ink-muted)] mt-2">
-                Synthetic Framed Archive
-              </span>
-            </div>
+            {/* Media preview */}
+            {selectedMemory.imageUrl ? (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] overflow-hidden border-2 shadow-xs"
+                style={{ borderColor: "var(--border)" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedMemory.imageUrl}
+                  alt={selectedMemory.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
+                style={{
+                  background: "var(--surface-2)",
+                  borderColor: "var(--border)",
+                }}
+              >
+                <Camera size={44} style={{ color: "var(--accent)" }} />
+                <span className="text-xs font-bold text-[var(--ink-muted)] mt-2">
+                  Synthetic Framed Archive
+                </span>
+              </div>
+            )}
 
             <div className="space-y-3">
               <h3 className="text-2xl font-bold">{selectedMemory.title}</h3>

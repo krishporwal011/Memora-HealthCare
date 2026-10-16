@@ -31,9 +31,9 @@ export interface SessionContext {
 }
 
 export const CULTURAL_ITEM_BANK: Item[] = [
-  { id: "item-gamosa", domain: "memory_match", difficulty: -1.2, content: { name: "Gamosa", icon: "🧣", hint: "Red and white woven cloth" } },
-  { id: "item-chai", domain: "memory_match", difficulty: -0.8, content: { name: "Chai Leaf", icon: "🍃", hint: "Green fresh garden leaf" } },
-  { id: "item-dhol", domain: "memory_match", difficulty: -0.3, content: { name: "Dhol Drum", icon: "🥁", hint: "Musical instrument used in Bihu" } },
+  { id: "item-gamosa", domain: "memory_match", difficulty: -1.2, content: { name: "Gamosa", icon: "🧣", imageUrl: "/memora-assets/Gemini_Generated_Image_af76u7af76u7af76.png", hint: "Red and white woven cloth" } },
+  { id: "item-chai", domain: "memory_match", difficulty: -0.8, content: { name: "Chai Leaf", icon: "🍃", imageUrl: "/memora-assets/Gemini_Generated_Image_af76u7af76u7af76 (1).png", hint: "Green fresh garden leaf" } },
+  { id: "item-dhol", domain: "memory_match", difficulty: -0.3, content: { name: "Dhol Drum", icon: "🥁", imageUrl: "/memora-assets/Gemini_Generated_Image_af76u7af76u7af76 (2).png", hint: "Musical instrument used in Bihu" } },
   { id: "item-jaapi", domain: "memory_match", difficulty: 0.2, content: { name: "Jaapi Hat", icon: "👒", hint: "Traditional conical farmer hat" } },
   { id: "item-kaziranga", domain: "memory_match", difficulty: 0.8, content: { name: "Rhino", icon: "🦏", hint: "One-horned animal of Kaziranga" } },
   { id: "item-kopou", domain: "memory_match", difficulty: 1.4, content: { name: "Kopou Orchid", icon: "🌸", hint: "Foxtail orchid worn during festival" } },

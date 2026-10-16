@@ -23,7 +23,7 @@ export const FALLBACK_APPROVED_QUESTIONS: QuizItem[] = [
     memory_id: "mem-01",
     question_text: "Who is receiving the phulam gamosa in the Tezpur photo?",
     photo_title: "Rongali Bihu (1985) in Tezpur",
-    image_url: "",
+    image_url: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia.png",
     options: [
       { id: "opt-1", text: "Grandmother", is_correct: true },
       { id: "opt-2", text: "Uncle Hemen", is_correct: false },

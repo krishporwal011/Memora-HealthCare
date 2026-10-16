@@ -18,6 +18,7 @@ export const DEFAULT_CONTACTS: FamilyContact[] = [
     name: "Jonali",
     relation: "Daughter",
     phone: "tel:+919876543210",
+    avatarUrl: "/memora-assets/Gemini_Generated_Image_t1d2djt1d2djt1d2.png",
     initials: "J",
   },
   {
@@ -25,6 +26,7 @@ export const DEFAULT_CONTACTS: FamilyContact[] = [
     name: "Ranjit",
     relation: "Son",
     phone: "tel:+919876543211",
+    avatarUrl: "/memora-assets/Gemini_Generated_Image_t1d2djt1d2djt1d2 (1).png",
     initials: "R",
   },
 ];
@@ -94,17 +96,33 @@ export function FamilyCallBar({
             }}
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0 border"
-                style={{
-                  background: "var(--primary-light)",
-                  color: "var(--primary-dark)",
-                  borderColor: "var(--primary)",
-                }}
-                aria-hidden="true"
-              >
-                {contact.initials}
-              </div>
+              {contact.avatarUrl ? (
+                <div
+                  className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2"
+                  style={{
+                    borderColor: "var(--primary)",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={contact.avatarUrl}
+                    alt={contact.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0 border"
+                  style={{
+                    background: "var(--primary-light)",
+                    color: "var(--primary-dark)",
+                    borderColor: "var(--primary)",
+                  }}
+                  aria-hidden="true"
+                >
+                  {contact.initials}
+                </div>
+              )}
               <div className="truncate">
                 <span
                   className="font-bold text-base md:text-lg block truncate"

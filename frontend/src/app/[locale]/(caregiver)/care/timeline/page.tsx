@@ -14,6 +14,7 @@ interface TimelineMemory {
   story: string;
   people: string[];
   type: "photo" | "song" | "story";
+  imageUrl?: string;
 }
 
 const TIMELINE_DATA: TimelineMemory[] = [
@@ -26,6 +27,7 @@ const TIMELINE_DATA: TimelineMemory[] = [
     story: "Mother and Pratima sang traditional Goalpariya folk songs during the evening courtyard gathering by the lantern.",
     people: ["Mother", "Pratima", "Bhaben Baruah"],
     type: "song",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (2).png",
   },
   {
     id: "tl-2",
@@ -36,6 +38,7 @@ const TIMELINE_DATA: TimelineMemory[] = [
     story: "Grandmother presented the hand-woven phulam gamosa with sacred blessing prayers for the harvest and family prosperity.",
     people: ["Grandmother", "Jonali", "Ranjit"],
     type: "photo",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia.png",
   },
   {
     id: "tl-3",
@@ -46,6 +49,7 @@ const TIMELINE_DATA: TimelineMemory[] = [
     story: "Taking the early morning wooden boat across the swollen river, watching the mist rise above the tea hills.",
     people: ["Father", "Ranjit"],
     type: "story",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (1).png",
   },
   {
     id: "tl-4",
@@ -56,6 +60,7 @@ const TIMELINE_DATA: TimelineMemory[] = [
     story: "Walking through rows of tea bushes in Jorhat with uncle Hemen, plucking fresh morning leaves in cane baskets.",
     people: ["Uncle Hemen", "Jonali"],
     type: "photo",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (3).png",
   },
   {
     id: "tl-5",
@@ -66,6 +71,7 @@ const TIMELINE_DATA: TimelineMemory[] = [
     story: "Jonali's daughter wore her first muga silk mekhela sador and performed the gentle Bihu dance on the verandah.",
     people: ["Jonali", "Granddaughter"],
     type: "photo",
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (4).png",
   },
 ];
 
@@ -164,6 +170,18 @@ export default function CaregiverTimelinePage() {
                   {item.location}
                 </span>
               </div>
+
+              {item.imageUrl && (
+                <div className="w-full aspect-video rounded-[var(--radius-md)] overflow-hidden my-3 border border-[var(--border)] shadow-xs">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102"
+                    loading="lazy"
+                  />
+                </div>
+              )}
 
               <h3 className="text-xl font-bold tracking-tight mb-2" style={{ color: "var(--ink)" }}>
                 {item.title}

@@ -24,6 +24,7 @@ const DEMO_APPROVED_MEMORIES: PatientMemory[] = [
     caption: "Rongali Bihu in Tezpur Courtyard",
     year: 1985,
     people: ["Jonali", "Grandmother"],
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia.png",
     storyNarrative: "In 1985, our family gathered in Tezpur for Rongali Bihu. Grandmother draped the woven phulam gamosa with blessing prayers for the harvest.",
   },
   {
@@ -32,6 +33,7 @@ const DEMO_APPROVED_MEMORIES: PatientMemory[] = [
     caption: "Brahmaputra Ferry Crossing at Sunrise",
     year: 1991,
     people: ["Ranjit", "Father"],
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (1).png",
     storyNarrative: "Taking the early morning wooden ferry across the Brahmaputra river near Silghat. The water was calm and golden in the autumn mist.",
   },
   {
@@ -40,6 +42,7 @@ const DEMO_APPROVED_MEMORIES: PatientMemory[] = [
     caption: "Traditional Borgeet Prayer Song",
     year: 1974,
     people: ["Mother"],
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (2).png",
     storyNarrative: "Mother sang this devotional Borgeet every evening during the sandhya prayer by the earthen lamp.",
   },
   {
@@ -48,6 +51,7 @@ const DEMO_APPROVED_MEMORIES: PatientMemory[] = [
     caption: "Tea Garden Harvest in Jorhat",
     year: 1998,
     people: ["Uncle Hemen", "Jonali"],
+    imageUrl: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (3).png",
     storyNarrative: "Walking through the lush green rows of the tea estate in Jorhat. Fresh autumn leaves were plucked with song and laughter.",
   },
 ];
@@ -165,19 +169,33 @@ export default function PatientAlbumPage() {
               </button>
             </div>
 
-            {/* Media placeholder */}
-            <div
-              className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
-              style={{
-                background: "var(--surface-2)",
-                borderColor: "var(--border)",
-              }}
-            >
-              <ImageIcon size={48} style={{ color: "var(--primary)" }} />
-              <span className="text-xs font-bold text-[var(--ink-muted)] mt-2">
-                Family Archive Photo
-              </span>
-            </div>
+            {/* Media preview */}
+            {selectedMemory.imageUrl ? (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] overflow-hidden border-2 shadow-xs"
+                style={{ borderColor: "var(--border)" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedMemory.imageUrl}
+                  alt={selectedMemory.caption}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
+                style={{
+                  background: "var(--surface-2)",
+                  borderColor: "var(--border)",
+                }}
+              >
+                <ImageIcon size={48} style={{ color: "var(--primary)" }} />
+                <span className="text-xs font-bold text-[var(--ink-muted)] mt-2">
+                  Family Archive Photo
+                </span>
+              </div>
+            )}
 
             <div className="space-y-3">
               <h2 className="text-2xl font-bold">{selectedMemory.caption}</h2>

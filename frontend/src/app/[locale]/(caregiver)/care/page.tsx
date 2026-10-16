@@ -48,6 +48,7 @@ export default function CaregiverDashboardPage() {
       year: 1985,
       is_approved: true,
       created_at: "2026-09-28T10:00:00Z",
+      signed_url: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia.png",
     },
     {
       id: "mem-02",
@@ -57,6 +58,7 @@ export default function CaregiverDashboardPage() {
       year: 1974,
       is_approved: true,
       created_at: "2026-09-29T14:30:00Z",
+      signed_url: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (2).png",
     },
     {
       id: "mem-03",
@@ -66,6 +68,17 @@ export default function CaregiverDashboardPage() {
       year: 1991,
       is_approved: true,
       created_at: "2026-09-30T09:15:00Z",
+      signed_url: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (1).png",
+    },
+    {
+      id: "mem-04",
+      memory_type: "photo",
+      caption: "Walking the lush green tea garden trails with Uncle Hemen in Jorhat",
+      people: ["Uncle Hemen", "Jonali"],
+      year: 1998,
+      is_approved: true,
+      created_at: "2026-10-01T11:00:00Z",
+      signed_url: "/memora-assets/Gemini_Generated_Image_xjiaitxjiaitxjia (3).png",
     },
   ]);
 
@@ -322,6 +335,7 @@ export default function CaregiverDashboardPage() {
                 caption={mem.caption}
                 people={mem.people}
                 year={mem.year}
+                imageUrl={mem.signed_url}
                 isApproved={mem.is_approved}
                 isOfflinePending={mem.is_offline_pending}
                 onClick={() => setSelectedMemoryIndex(idx)}
@@ -365,19 +379,33 @@ export default function CaregiverDashboardPage() {
               </button>
             </div>
 
-            {/* Media representation */}
-            <div
-              className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
-              style={{
-                background: "var(--surface-2)",
-                borderColor: "var(--border)",
-              }}
-            >
-              <Layers size={44} style={{ color: "var(--primary)" }} />
-              <span className="text-xs font-bold uppercase tracking-wider mt-2 text-[var(--ink-muted)]">
-                Synthetic Family Media Vault
-              </span>
-            </div>
+            {/* Media preview */}
+            {activeDetailMemory.signed_url ? (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] overflow-hidden border-2 shadow-xs"
+                style={{ borderColor: "var(--border)" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={activeDetailMemory.signed_url}
+                  alt={activeDetailMemory.caption}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div
+                className="w-full aspect-video rounded-[var(--radius-md)] flex flex-col items-center justify-center border"
+                style={{
+                  background: "var(--surface-2)",
+                  borderColor: "var(--border)",
+                }}
+              >
+                <Layers size={44} style={{ color: "var(--primary)" }} />
+                <span className="text-xs font-bold uppercase tracking-wider mt-2 text-[var(--ink-muted)]">
+                  Synthetic Family Media Vault
+                </span>
+              </div>
+            )}
 
             {/* Spec-style Table */}
             <div className="border rounded-[var(--radius-md)] overflow-hidden" style={{ borderColor: "var(--border)" }}>
